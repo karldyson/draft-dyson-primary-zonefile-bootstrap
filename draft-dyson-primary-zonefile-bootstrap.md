@@ -10,8 +10,8 @@ number:
 date:
 consensus: true
 v: 3
-area: Operations and Management
-workgroup: Internet Engineering Task Force
+# area: Operations and Management
+# workgroup: Internet Engineering Task Force
 keyword:
  - catalog zone
  - zonefile bootstrap
