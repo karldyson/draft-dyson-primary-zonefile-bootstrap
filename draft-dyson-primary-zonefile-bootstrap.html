@@ -7,7 +7,7 @@
 <title>Zonefile Bootstrap on DNS Primary Server</title>
 <meta content="Karl Dyson" name="author">
 <meta content="
-       This document specifies an update to   such that the primary server can bootstrap the zonefile using information contained within a catalog zone. 
+       This document specifies an update to   such that the primary DNS server for a zone can bootstrap the underlying zonefile using information contained within a catalog zone. 
     " name="description">
 <meta content="xml2rfc 3.24.0" name="generator">
 <meta content="catalog zone" name="keyword">
@@ -1117,7 +1117,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">Zonefile Bootstrap on DNS Primary Server</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document specifies an update to <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> such that the primary server can bootstrap the zonefile using information contained within a catalog zone.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document specifies an update to <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> such that the primary DNS server for a zone can bootstrap the underlying zonefile using information contained within a catalog zone.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1236,6 +1236,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
                 <p id="section-toc.1-1.11.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-soa-property" class="internal xref">soa Property</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
+                <p id="section-toc.1-1.11.2.5.1"><a href="#appendix-B.5" class="auto internal xref">B.5</a>.  <a href="#name-ns-property" class="internal xref">ns Property</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
@@ -1289,7 +1292,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-general-approach">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-general-approach" class="section-name selfRef">General Approach</a>
       </h2>
-<p id="section-3-1">It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates <span>[<a href="#RFC2136" class="cite xref">RFC2136</a>]</span>, and will want to distribute the zones to their secondary servers via Catalog Zones <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates <span>[<a href="#RFC2136" class="cite xref">RFC2136</a>]</span>, and will want to distribute the zones to their secondary servers via DNS Catalog Zones <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="catalog-properties">
@@ -1331,7 +1334,7 @@ soa.boot.$CATZ 0 IN TXT ( "mname:&lt;mname&gt;; rname:&lt;rname&gt;; "
       "minimum:&lt;minimum&gt;" )
 </pre><a href="#section-4.2-3" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-4">There <span class="bcp14">MUST NOT</span> be more than a single soa property record with the exception that a member zone record can be specified to override the default (see section x below).<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-4">There <span class="bcp14">MUST NOT</span> be more than a single soa property record with the exception that a member zone record can be specified to override the default (see <a href="#memberZoneSection" class="auto internal xref">Section 5</a> below).<a href="#section-4.2-4" class="pilcrow">¶</a></p>
 <p id="section-4.2-5">Multiple soa property records constitues a broken catalog zone, which <span class="bcp14">MUST NOT</span> be processed (see <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> section 5.1).<a href="#section-4.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1340,21 +1343,23 @@ soa.boot.$CATZ 0 IN TXT ( "mname:&lt;mname&gt;; rname:&lt;rname&gt;; "
         <h3 id="name-nameservers-ns-property">
 <a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-nameservers-ns-property" class="section-name selfRef">Nameservers (ns property)</a>
         </h3>
-<p id="section-4.3-1">Once again, actual NS records cannot be used, as we do not want to actually delegate outside of this catalog zone, and so the nameservers will be specified in a TXT record as follows, along with the asssociated IP addresses, if required.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
-<p id="section-4.3-2">If the nameservers are in-bailiwick and address records are therefore required, suitable address records <span class="bcp14">MUST</span> be created in the zone from the entries specified.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
-<p id="section-4.3-3">If the nameservers are in-bailiwick, and at least one address is not specified, this denotes a broken catalog zone, which <span class="bcp14">MUST NOT</span> be processed.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
-<p id="section-4.3-4">The ns property can be specified multiple times, with one nameserver specified per entry.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.3-5">
+<p id="section-4.3-1">Actual NS records cannot be used, as we do not want to actually delegate outside of this catalog zone.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">The nameservers will be specified in a TXT record as follows, along with the associated IP addresses.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-3">Speciying the nameserver IP addresses is <span class="bcp14">OPTIONAL</span>, with the exception that if the zone that the nameservers reside in is to be created within the catalog, then they <span class="bcp14">MUST</span> be specified in order that the relevant records can be created in the zone at zone bootstrap time.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.3-4">If the nameservers are in-bailiwick and address records are therefore required, suitable address records <span class="bcp14">MUST</span> be created in the zone from the entries specified.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
+<p id="section-4.3-5">If the nameservers are in-bailiwick, and an address is not specified, this denotes a broken catalog zone, which <span class="bcp14">MUST NOT</span> be processed.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">The ns property can be specified multiple times, with one nameserver specified per entry.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.3-7">
 <pre>
 ns.boot.$CATZ 0 IN TXT ( "ns:some.name.server.; "
       "a:192.0.2.1; aaaa:2001:db8::1" )
-</pre><a href="#section-4.3-5" class="pilcrow">¶</a>
+</pre><a href="#section-4.3-7" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 </section>
 </div>
-<div id="member-zone-properties">
+<div id="memberZoneSection">
 <section id="section-5">
       <h2 id="name-member-zone-properties">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-member-zone-properties" class="section-name selfRef">Member Zone Properties</a>
@@ -1383,7 +1388,7 @@ ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns:some.name.server.; "
         <h3 id="name-general-behaviour">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-general-behaviour" class="section-name selfRef">General Behaviour</a>
         </h3>
-<p id="section-6.1-1">The parameters specified in the boot property will contain hostnames, for example in the NS records and in the SOA; these WILL be replicated verbatim into the zone upon creation, and so it should be noted that if they would be fully qualified in a manually created zone file, they <span class="bcp14">MUST</span> be fully quallified in the parameter specification in the property.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">The parameters specified in the boot property will contain hostnames, for example in the NS records and in the SOA; these will be replicated verbatim into the zone upon creation, and so it should be noted that if they would be fully qualified in a manually created zone file, they <span class="bcp14">MUST</span> be fully quallified in the parameter specification in the property.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1545,6 +1550,14 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns:ns.example.net"
         </h3>
 <p id="appendix-B.4-1">Consideration was given as to whether things like SOA parameters should be individual records, but it seemed unnecessary to break them out and create the additional records.<a href="#appendix-B.4-1" class="pilcrow">¶</a></p>
 <p id="appendix-B.4-2">Should we permit the property to be made up of multiple TXT records so long as a given parameter is not repeated?<a href="#appendix-B.4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ns-property">
+<section id="appendix-B.5">
+        <h3 id="name-ns-property">
+<a href="#appendix-B.5" class="section-number selfRef">B.5. </a><a href="#name-ns-property" class="section-name selfRef">ns Property</a>
+        </h3>
+<p id="appendix-B.5-1">Is there a circular dependency or race condition issue here...?<a href="#appendix-B.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

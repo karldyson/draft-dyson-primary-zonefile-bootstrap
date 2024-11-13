@@ -15,8 +15,8 @@ Expires: 17 May 2025
 Abstract
 
    This document specifies an update to [RFC9432] such that the primary
-   server can bootstrap the zonefile using information contained within
-   a catalog zone.
+   DNS server for a zone can bootstrap the underlying zonefile using
+   information contained within a catalog zone.
 
 Discussion Venues
 
@@ -77,6 +77,7 @@ Table of Contents
      B.2.  DNSSEC
      B.3.  coo Property
      B.4.  soa Property
+     B.5.  ns Property
    Appendix C.  Change Log
      C.1.  00 - Initial draft
    Acknowledgments
@@ -142,7 +143,7 @@ Table of Contents
    dynamically provision a zone on the primary server is because the
    operator will then manage resource records in the zone via Dynamic
    Updates [RFC2136], and will want to distribute the zones to their
-   secondary servers via Catalog Zones [RFC9432].
+   secondary servers via DNS Catalog Zones [RFC9432].
 
 4.  Catalog Properties
 
@@ -180,25 +181,30 @@ Table of Contents
 
    There MUST NOT be more than a single soa property record with the
    exception that a member zone record can be specified to override the
-   default (see section x below).
+   default (see Section 5 below).
 
    Multiple soa property records constitues a broken catalog zone, which
    MUST NOT be processed (see [RFC9432] section 5.1).
 
 4.3.  Nameservers (ns property)
 
-   Once again, actual NS records cannot be used, as we do not want to
-   actually delegate outside of this catalog zone, and so the
-   nameservers will be specified in a TXT record as follows, along with
-   the asssociated IP addresses, if required.
+   Actual NS records cannot be used, as we do not want to actually
+   delegate outside of this catalog zone.
+
+   The nameservers will be specified in a TXT record as follows, along
+   with the associated IP addresses.
+
+   Speciying the nameserver IP addresses is OPTIONAL, with the exception
+   that if the zone that the nameservers reside in is to be created
+   within the catalog, then they MUST be specified in order that the
+   relevant records can be created in the zone at zone bootstrap time.
 
    If the nameservers are in-bailiwick and address records are therefore
    required, suitable address records MUST be created in the zone from
    the entries specified.
 
-   If the nameservers are in-bailiwick, and at least one address is not
-   specified, this denotes a broken catalog zone, which MUST NOT be
-   processed.
+   If the nameservers are in-bailiwick, and an address is not specified,
+   this denotes a broken catalog zone, which MUST NOT be processed.
 
    The ns property can be specified multiple times, with one nameserver
    specified per entry.
@@ -228,7 +234,7 @@ Table of Contents
 6.1.  General Behaviour
 
    The parameters specified in the boot property will contain hostnames,
-   for example in the NS records and in the SOA; these WILL be
+   for example in the NS records and in the SOA; these will be
    replicated verbatim into the zone upon creation, and so it should be
    noted that if they would be fully qualified in a manually created
    zone file, they MUST be fully quallified in the parameter
@@ -362,6 +368,10 @@ B.4.  soa Property
 
    Should we permit the property to be made up of multiple TXT records
    so long as a given parameter is not repeated?
+
+B.5.  ns Property
+
+   Is there a circular dependency or race condition issue here...?
 
 Appendix C.  Change Log
 
