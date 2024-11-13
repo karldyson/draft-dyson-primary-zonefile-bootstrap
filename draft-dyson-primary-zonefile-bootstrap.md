@@ -65,28 +65,171 @@ It may be considered that this is "nameserver configuration", however, it has st
 
 The scope may of this document is confined to the initial bootstrap provisioning of the zone file, and broader provisioning of the base nameserver configuration is beyond the scope of this discussion and document.
 
-
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
+This document doesn't alter the conventions and definitions as defined in {{RFC9432}} DNS Catalog Zones.
+
+# General Approach
+
+It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and will want to distribute the zones to their secondary servers via Catalog Zones {{RFC9432}}.
+
+# Catalog Properties
+
+## Zonefile Bootstrap (boot property)
+
+When suitable configuration is activated in the implementation, and a new entry is added to the catalog being served by the primary, the primary should create the underlying zonefile with the parameters outlined in the boot property.
+
+The implementation MAY permit the following on a global, or per catalog basis, by way of suitable configuration parameters:
+
+  * The zone file is ONLY created if the zonefile does not already exist
+  * The zone file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server)
+  * The zone file is ALWAYS created, overwriting any existing zone file
+
+## Start Of Authority (soa property)
+
+The soa property is used to specify the SOA that will be applied to the created zonefile for the member zone.
+
+Clearly an actual SOA record type cannot be used here, and so the parameters to be applied shall be constructed in a TXT record type as follows:
+
+~~~~
+soa.boot.$CATZ 0 IN TXT ( "mname:<mname>; rname:<rname>; "
+      "refresh:<refresh>; retry:<retry>; expire:<expire>; "
+      "minimum:<minimum>" )
+~~~~
+
+There MUST NOT be more than a single soa property record with the exception that a member zone record can be specified to override the default (see section x below).
+
+Multiple soa property records constitues a broken catalog zone, which MUST NOT be processed (see {{RFC9432}} section 5.1).
+
+
+## Nameservers (ns property)
+
+Once again, actual NS records cannot be used, as we do not want to actually delegate outside of this catalog zone, and so the nameservers will be specified in a TXT record as follows, along with the asssociated IP addresses, if required.
+
+If the nameservers are in-bailiwick and address records are therefore required, suitable address records MUST be created in the zone from the entries specified.
+
+If the nameservers are in-bailiwick, and at least one address is not specified, this denotes a broken catalog zone, which MUST NOT be processed.
+
+The ns property can be specified multiple times, with one nameserver specified per entry.
+
+~~~~
+ns.boot.$CATZ 0 IN TXT ( "ns:some.name.server.; "
+      "a:192.0.2.1; aaaa:2001:db8::1" )
+~~~~
+
+
 # Member Zone Properties
+
+The default properties outlined above can be overridden on a per zone basis as follows. Where per zone entries are specified in the catalog, they MUST be used in preference to the default properties.
+
+A subset MAY be specified here; for example, the SOA could be omitted here and just the NS records or DNSSEC parameters specified, with the defaults picked up for the other parameters.
+
+~~~~
+<unique-N>.zones.$CATZ 0 IN PTR example.com.
+soa.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "mname:<mname>; "
+      "rname:<rname>; refresh:<refresh>; retry:<retry>; "
+      "expire:<expire>; minimum:<minimum>" )
+ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "ns:some.name.server.; "
+      "a:192.0.2.1; aaaa:2001:db8::1" )
+~~~~
+
+
+# Name Server Behaviour
+
+## General Behaviour
+
+The parameters specified in the boot property will contain hostnames, for example in the NS records and in the SOA; these WILL be replicated verbatim into the zone upon creation, and so it should be noted that if they would be fully qualified in a manually created zone file, they MUST be fully quallified in the parameter specification in the property.
 
 # Security Considerations
 
 This document does not alter the security considerations already outlined in {{RFC9432}}
 
 
-# IANA Considerations
+# IANA Considerations {#IANA}
 
-This document has no IANA actions.
+IANA is requested to add the following entries to the registry:
+
+Registry Name: DNS Catalog Zones Properties
+
+Reference: this document
+
+| Property Prefix | Description        | Status          | Reference     |
+| boot            | Bootstrap          | Standards Track | this document |
+| soa             | Start Of Authority | Standards Track | this document |
+| ns              | Name Server        | Standards Track | this document |
+{:title="DNS Catalog Zones Properies Registry"}
+
+Field meanings are unchanged from {{RFC9432}}
 
 
 --- back
 
 # Catalog Zone Example
 
-# Acknowledgments
+The following is an example showing the additional properties and parameters as outlined in this document.
+
+There are defaults specified for the SOA and NS records, which would be used by the example.com. zone.
+
+The example.net. zone would utilise the default SOA record, but would utilise the more specific NS records.
+
+The A and AAAA records for the default nameservers are in-bailiwick of example.com, and so the records would be expected to be created in that zone, however, they would of course not be expected to be added to the example.net zone.
+
+~~~~
+catz.invalid. 0 SOA invalid. invalid. 1 3600 600 2419200 3600
+catz.invalid. 0 NS invalid.
+soa.boot.catz.invalid. 0 TXT ( "mname:ns.example.com.; "
+      "rname:hostmaster.example.com.; refresh:14400; "
+      "retry:900; expire:2419200; minimum:3600" )
+ns.boot.catz.invalid. 0 TXT ( "ns:ns1.example.com. a:192.0.2.1 "
+      "aaaa:2001:db8::1" )
+ns.boot.catz.invalid. 0 TXT ( "ns:ns2.example.com. a:192.0.2.2 "
+      "aaaa:2001:db8::2" )
+kahdkh6f.zones.catz.invalid. 0 PTR example.com.
+hajhsjha.zones.catz.invalid. 0 PTR example.net.
+ns.hajhsjha.zones.catz.invalid. 0 TXT "ns:ns.example.org"
+ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns:ns.example.net"
+      "a:192.0.2.250; aaaa:2001:db8:ff::149" )
+~~~~
+
+# Author Notes/Thoughts
+
+NB: To be removed by the RFC Editor prior to publication.
+
+## Is catalog zones the right place for this?
+
+Much consideration has been given as to whether the primary server should be consuming the/a catalog zone, rather than simply serving it to secondary servers for consumption.
+
+It does feel a little bit like it muddies the waters between zone distribution and zone "provisioning" but:
+
+1. In a catalog zone scenario, the catalog equally feels like the place for zone related parameters
+1. It feels less like Dynamic Updates would be the right place for it
+1. An API for *just* zone bootstrapping feels like a big thing that would likely not get implemented, and would likely be a part of a wider implementation's general nameserver configuration and operations API, which is waaaaay beyond the scope of this document/standardisation
+
+TODO - add more detail explaining the above, reasoning, etc...?
+
+## DNSSEC
+
+It seems that it'd be useful to signal initial policy/settings for DNSSEC in a standardised way also, but the primary might, or might not be the signer; the signer may be downstream. But it might be very nice to be able to signal to the signer that it should create some keys, sign the zone...
+
+## coo Property
+
+Are there any considerations around change of ownership that need mentioning or documenting here...?
+
+## soa Property
+
+Consideration was given as to whether things like SOA parameters should be individual records, but it seemed unnecessary to break them out and create the additional records.
+
+Should we permit the property to be made up of multiple TXT records so long as a given parameter is not repeated?
+
+# Change Log
+
+NB: To be removed by the RFC Editor prior to publication.
+
+## 00 - Initial draft
+
+# Acknowledgments {#Acknowledgements}
 {:numbered="false"}
 
 TODO acknowledge.
