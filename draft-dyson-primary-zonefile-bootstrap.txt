@@ -176,8 +176,8 @@ Table of Contents
    follows:
 
    soa.boot.$CATZ 0 IN TXT ( "mname:<mname>; rname:<rname>; "
-         "refresh:<refresh>; retry:<retry>; expire:<expire>; "
-         "minimum:<minimum>" )
+         "refresh=<refresh>; retry=<retry>; expire=<expire>; "
+         "minimum=<minimum>" )
 
    There MUST NOT be more than a single soa property record with the
    exception that a member zone record can be specified to override the
@@ -209,8 +209,8 @@ Table of Contents
    The ns property can be specified multiple times, with one nameserver
    specified per entry.
 
-   ns.boot.$CATZ 0 IN TXT ( "ns:some.name.server.; "
-         "a:192.0.2.1; aaaa:2001:db8::1" )
+   ns.boot.$CATZ 0 IN TXT ( "ns=some.name.server.; "
+         "a=192.0.2.1; aaaa=2001:db8::1" )
 
 5.  Member Zone Properties
 
@@ -223,11 +223,11 @@ Table of Contents
    defaults picked up for the other parameters.
 
    <unique-N>.zones.$CATZ 0 IN PTR example.com.
-   soa.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "mname:<mname>; "
-         "rname:<rname>; refresh:<refresh>; retry:<retry>; "
+   soa.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "mname=<mname>; "
+         "rname=<rname>; refresh=<refresh>; retry=<retry>; "
          "expire:<expire>; minimum:<minimum>" )
-   ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "ns:some.name.server.; "
-         "a:192.0.2.1; aaaa:2001:db8::1" )
+   ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
+         "a=192.0.2.1; aaaa=2001:db8::1" )
 
 6.  Name Server Behaviour
 
@@ -307,18 +307,18 @@ Appendix A.  Catalog Zone Example
 
    catz.invalid. 0 SOA invalid. invalid. 1 3600 600 2419200 3600
    catz.invalid. 0 NS invalid.
-   soa.boot.catz.invalid. 0 TXT ( "mname:ns.example.com.; "
-         "rname:hostmaster.example.com.; refresh:14400; "
-         "retry:900; expire:2419200; minimum:3600" )
-   ns.boot.catz.invalid. 0 TXT ( "ns:ns1.example.com. a:192.0.2.1 "
-         "aaaa:2001:db8::1" )
-   ns.boot.catz.invalid. 0 TXT ( "ns:ns2.example.com. a:192.0.2.2 "
-         "aaaa:2001:db8::2" )
+   soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com.; "
+         "rname=hostmaster.example.com.; refresh=14400; "
+         "retry=900; expire=2419200; minimum=3600" )
+   ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.org. a=192.0.2.1 "
+         "aaaa=2001:db8::1" )
+   ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.org. a=192.0.2.2 "
+         "aaaa=2001:db8::2" )
    kahdkh6f.zones.catz.invalid. 0 PTR example.com.
    hajhsjha.zones.catz.invalid. 0 PTR example.net.
-   ns.hajhsjha.zones.catz.invalid. 0 TXT "ns:ns.example.org"
-   ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns:ns.example.net"
-         "a:192.0.2.250; aaaa:2001:db8:ff::149" )
+   ns.hajhsjha.zones.catz.invalid. 0 TXT "ns=ns.example.org"
+   ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns=ns.example.net"
+         "a=192.0.2.250; aaaa=2001:db8:ff::149" )
 
 Appendix B.  Author Notes/Thoughts
 
@@ -368,6 +368,18 @@ B.4.  soa Property
 
    Should we permit the property to be made up of multiple TXT records
    so long as a given parameter is not repeated?
+
+   Should we specify an soa serial format? or an initial soa serial
+   value...?
+
+   Given that it's pretty much expected that the operator is going to
+   start making changes to the zone via dynamic updates, it'd be
+   reasonable to expect them to be able to set those parameters.  Which
+   does beg the question, do we need to specify soa and nameserver
+   values at all, or just specify that the zonefile is or is not to be
+   created, and fill some template default values with the expectation
+   that the operator would immediatly overwrite them with "correct"
+   values...?
 
 B.5.  ns Property
 

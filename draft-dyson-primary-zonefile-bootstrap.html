@@ -1330,8 +1330,8 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <div class="alignLeft art-text artwork" id="section-4.2-3">
 <pre>
 soa.boot.$CATZ 0 IN TXT ( "mname:&lt;mname&gt;; rname:&lt;rname&gt;; "
-      "refresh:&lt;refresh&gt;; retry:&lt;retry&gt;; expire:&lt;expire&gt;; "
-      "minimum:&lt;minimum&gt;" )
+      "refresh=&lt;refresh&gt;; retry=&lt;retry&gt;; expire=&lt;expire&gt;; "
+      "minimum=&lt;minimum&gt;" )
 </pre><a href="#section-4.2-3" class="pilcrow">¶</a>
 </div>
 <p id="section-4.2-4">There <span class="bcp14">MUST NOT</span> be more than a single soa property record with the exception that a member zone record can be specified to override the default (see <a href="#memberZoneSection" class="auto internal xref">Section 5</a> below).<a href="#section-4.2-4" class="pilcrow">¶</a></p>
@@ -1351,8 +1351,8 @@ soa.boot.$CATZ 0 IN TXT ( "mname:&lt;mname&gt;; rname:&lt;rname&gt;; "
 <p id="section-4.3-6">The ns property can be specified multiple times, with one nameserver specified per entry.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.3-7">
 <pre>
-ns.boot.$CATZ 0 IN TXT ( "ns:some.name.server.; "
-      "a:192.0.2.1; aaaa:2001:db8::1" )
+ns.boot.$CATZ 0 IN TXT ( "ns=some.name.server.; "
+      "a=192.0.2.1; aaaa=2001:db8::1" )
 </pre><a href="#section-4.3-7" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1369,11 +1369,11 @@ ns.boot.$CATZ 0 IN TXT ( "ns:some.name.server.; "
 <div class="alignLeft art-text artwork" id="section-5-3">
 <pre>
 &lt;unique-N&gt;.zones.$CATZ 0 IN PTR example.com.
-soa.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "mname:&lt;mname&gt;; "
-      "rname:&lt;rname&gt;; refresh:&lt;refresh&gt;; retry:&lt;retry&gt;; "
+soa.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "mname=&lt;mname&gt;; "
+      "rname=&lt;rname&gt;; refresh=&lt;refresh&gt;; retry=&lt;retry&gt;; "
       "expire:&lt;expire&gt;; minimum:&lt;minimum&gt;" )
-ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns:some.name.server.; "
-      "a:192.0.2.1; aaaa:2001:db8::1" )
+ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
+      "a=192.0.2.1; aaaa=2001:db8::1" )
 </pre><a href="#section-5-3" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1484,18 +1484,18 @@ ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns:some.name.server.; "
 <pre>
 catz.invalid. 0 SOA invalid. invalid. 1 3600 600 2419200 3600
 catz.invalid. 0 NS invalid.
-soa.boot.catz.invalid. 0 TXT ( "mname:ns.example.com.; "
-      "rname:hostmaster.example.com.; refresh:14400; "
-      "retry:900; expire:2419200; minimum:3600" )
-ns.boot.catz.invalid. 0 TXT ( "ns:ns1.example.com. a:192.0.2.1 "
-      "aaaa:2001:db8::1" )
-ns.boot.catz.invalid. 0 TXT ( "ns:ns2.example.com. a:192.0.2.2 "
-      "aaaa:2001:db8::2" )
+soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com.; "
+      "rname=hostmaster.example.com.; refresh=14400; "
+      "retry=900; expire=2419200; minimum=3600" )
+ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.org. a=192.0.2.1 "
+      "aaaa=2001:db8::1" )
+ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.org. a=192.0.2.2 "
+      "aaaa=2001:db8::2" )
 kahdkh6f.zones.catz.invalid. 0 PTR example.com.
 hajhsjha.zones.catz.invalid. 0 PTR example.net.
-ns.hajhsjha.zones.catz.invalid. 0 TXT "ns:ns.example.org"
-ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns:ns.example.net"
-      "a:192.0.2.250; aaaa:2001:db8:ff::149" )
+ns.hajhsjha.zones.catz.invalid. 0 TXT "ns=ns.example.org"
+ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns=ns.example.net"
+      "a=192.0.2.250; aaaa=2001:db8:ff::149" )
 </pre><a href="#appendix-A-5" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1550,6 +1550,8 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns:ns.example.net"
         </h3>
 <p id="appendix-B.4-1">Consideration was given as to whether things like SOA parameters should be individual records, but it seemed unnecessary to break them out and create the additional records.<a href="#appendix-B.4-1" class="pilcrow">¶</a></p>
 <p id="appendix-B.4-2">Should we permit the property to be made up of multiple TXT records so long as a given parameter is not repeated?<a href="#appendix-B.4-2" class="pilcrow">¶</a></p>
+<p id="appendix-B.4-3">Should we specify an soa serial format? or an initial soa serial value...?<a href="#appendix-B.4-3" class="pilcrow">¶</a></p>
+<p id="appendix-B.4-4">Given that it's pretty much expected that the operator is going to start making changes to the zone via dynamic updates, it'd be reasonable to expect them to be able to set those parameters. Which does beg the question, do we need to specify soa and nameserver values at all, or just specify that the zonefile is or is not to be created, and fill some template default values with the expectation that the operator would immediatly overwrite them with "correct" values...?<a href="#appendix-B.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ns-property">
