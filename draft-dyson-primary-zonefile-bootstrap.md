@@ -40,7 +40,7 @@ informative:
 
 --- abstract
 
-This document specifies an update to {{RFC9432}} such that the primary server can bootstrap the zonefile using information contained within a catalog zone.
+This document specifies an update to {{RFC9432}} such that the primary DNS server for a zone can bootstrap the underlying zonefile using information contained within a catalog zone.
 
 
 --- middle
@@ -73,7 +73,7 @@ This document doesn't alter the conventions and definitions as defined in {{RFC9
 
 # General Approach
 
-It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and will want to distribute the zones to their secondary servers via Catalog Zones {{RFC9432}}.
+It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and will want to distribute the zones to their secondary servers via DNS Catalog Zones {{RFC9432}}.
 
 # Catalog Properties
 
@@ -99,18 +99,22 @@ soa.boot.$CATZ 0 IN TXT ( "mname:<mname>; rname:<rname>; "
       "minimum:<minimum>" )
 ~~~~
 
-There MUST NOT be more than a single soa property record with the exception that a member zone record can be specified to override the default (see section x below).
+There MUST NOT be more than a single soa property record with the exception that a member zone record can be specified to override the default (see {{memberZoneSection}} below).
 
 Multiple soa property records constitues a broken catalog zone, which MUST NOT be processed (see {{RFC9432}} section 5.1).
 
 
 ## Nameservers (ns property)
 
-Once again, actual NS records cannot be used, as we do not want to actually delegate outside of this catalog zone, and so the nameservers will be specified in a TXT record as follows, along with the asssociated IP addresses, if required.
+Actual NS records cannot be used, as we do not want to actually delegate outside of this catalog zone.
+
+The nameservers will be specified in a TXT record as follows, along with the associated IP addresses.
+
+Speciying the nameserver IP addresses is OPTIONAL, with the exception that if the zone that the nameservers reside in is to be created within the catalog, then they MUST be specified in order that the relevant records can be created in the zone at zone bootstrap time.
 
 If the nameservers are in-bailiwick and address records are therefore required, suitable address records MUST be created in the zone from the entries specified.
 
-If the nameservers are in-bailiwick, and at least one address is not specified, this denotes a broken catalog zone, which MUST NOT be processed.
+If the nameservers are in-bailiwick, and an address is not specified, this denotes a broken catalog zone, which MUST NOT be processed.
 
 The ns property can be specified multiple times, with one nameserver specified per entry.
 
@@ -120,7 +124,7 @@ ns.boot.$CATZ 0 IN TXT ( "ns:some.name.server.; "
 ~~~~
 
 
-# Member Zone Properties
+# Member Zone Properties {#memberZoneSection}
 
 The default properties outlined above can be overridden on a per zone basis as follows. Where per zone entries are specified in the catalog, they MUST be used in preference to the default properties.
 
@@ -140,7 +144,7 @@ ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "ns:some.name.server.; "
 
 ## General Behaviour
 
-The parameters specified in the boot property will contain hostnames, for example in the NS records and in the SOA; these WILL be replicated verbatim into the zone upon creation, and so it should be noted that if they would be fully qualified in a manually created zone file, they MUST be fully quallified in the parameter specification in the property.
+The parameters specified in the boot property will contain hostnames, for example in the NS records and in the SOA; these will be replicated verbatim into the zone upon creation, and so it should be noted that if they would be fully qualified in a manually created zone file, they MUST be fully quallified in the parameter specification in the property.
 
 # Security Considerations
 
@@ -222,6 +226,10 @@ Are there any considerations around change of ownership that need mentioning or 
 Consideration was given as to whether things like SOA parameters should be individual records, but it seemed unnecessary to break them out and create the additional records.
 
 Should we permit the property to be made up of multiple TXT records so long as a given parameter is not repeated?
+
+## ns Property
+
+Is there a circular dependency or race condition issue here...?
 
 # Change Log
 
