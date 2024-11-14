@@ -141,9 +141,9 @@ Table of Contents
 3.1.  Zonefile Bootstrap (boot property)
 
    When suitable configuration is activated in the implementation, and a
-   new entry is added to the catalog being served by the primary, the
-   primary should create the underlying zonefile with the properties and
-   parameters outlined in the boot property.
+   new member zone entry is added to the catalog being served by the
+   primary, the primary should create the underlying zonefile with the
+   properties and parameters outlined in the boot property.
 
    The boot property is the parent label to the other labels that
    facilitate the adding of the various properties and parameters.
@@ -186,7 +186,7 @@ Table of Contents
    delegate outside of this catalog zone.
 
    The nameservers will be specified in a TXT record as follows, along
-   with the associated IP addresses.
+   with the associated IP addresses, if appropriate or required.
 
    Speciying the nameserver IP addresses is OPTIONAL, with the exception
    that if the zone that the nameservers reside in is to be created
@@ -204,24 +204,25 @@ Table of Contents
    specified per entry.
 
    ns.boot.$CATZ 0 IN TXT ( "ns=some.name.server.; "
-         "a=192.0.2.1; aaaa=2001:db8::1" )
+         "ipv4=192.0.2.1; ipv6=2001:db8::1" )
 
 4.  Member Zone Properties
 
-   The default properties outlined above can be overridden on a per zone
-   basis as follows.  Where per zone entries are specified in the
-   catalog, they MUST be used in preference to the default properties.
+   The default properties outlined above can be overridden on a per
+   member zone basis.  Where per member zone entries are specified in
+   the catalog, they MUST be used in preference to the default
+   properties specified at the catalog level.
 
    A subset MAY be specified here; for example, the SOA could be omitted
    here and just the NS records or DNSSEC parameters specified, with the
-   defaults picked up for the other parameters.
+   omitted properties taken from the catalog level values.
 
    <unique-N>.zones.$CATZ 0 IN PTR example.com.
    soa.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "mname=<mname>; "
          "rname=<rname>; refresh=<refresh>; retry=<retry>; "
          "expire:<expire>; minimum:<minimum>" )
    ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
-         "a=192.0.2.1; aaaa=2001:db8::1" )
+         "ipv4=192.0.2.1; ipv6=2001:db8::1" )
 
 5.  Name Server Behaviour
 
@@ -304,15 +305,15 @@ Appendix A.  Catalog Zone Example
    soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com.; "
          "rname=hostmaster.example.com.; refresh=14400; "
          "retry=900; expire=2419200; minimum=3600" )
-   ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.org. a=192.0.2.1 "
-         "aaaa=2001:db8::1" )
-   ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.org. a=192.0.2.2 "
-         "aaaa=2001:db8::2" )
+   ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.org. ipv4=192.0.2.1 "
+         "ipv6=2001:db8::1" )
+   ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.org. ipv4=192.0.2.2 "
+         "ipv6=2001:db8::2" )
    kahdkh6f.zones.catz.invalid. 0 PTR example.com.
    hajhsjha.zones.catz.invalid. 0 PTR example.net.
    ns.hajhsjha.zones.catz.invalid. 0 TXT "ns=ns.example.org"
    ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns=ns.example.net"
-         "a=192.0.2.250; aaaa=2001:db8:ff::149" )
+         "ipv4=192.0.2.250; ipv6=2001:db8:ff::149" )
 
 Appendix B.  Author Notes/Thoughts
 
@@ -394,9 +395,6 @@ B.3.3.  soa Property
 B.3.4.  ns Property
 
    Is there a circular dependency or race condition issue here...?
-
-   Should we use ipv4 and ipv6 style parameter naming instead of a and
-   aaaa, to be more consistent with, say, SVCB notation?
 
 Appendix C.  Change Log
 
