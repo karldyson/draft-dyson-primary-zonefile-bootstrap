@@ -169,7 +169,7 @@ Table of Contents
    parameters to be applied shall be constructed in a TXT record type as
    follows:
 
-   soa.boot.$CATZ 0 IN TXT ( "mname:<mname>; rname:<rname>; "
+   soa.boot.$CATZ 0 IN TXT ( "mname=<mname>; rname=<rname>; "
          "refresh=<refresh>; retry=<retry>; expire=<expire>; "
          "minimum=<minimum>" )
 
@@ -188,17 +188,19 @@ Table of Contents
    The nameservers will be specified in a TXT record as follows, along
    with the associated IP addresses, if appropriate or required.
 
-   Speciying the nameserver IP addresses is OPTIONAL, with the exception
-   that if the zone that the nameservers reside in is to be created
-   within the catalog, then they MUST be specified in order that the
-   relevant records can be created in the zone at zone bootstrap time.
+   Specifying the nameserver IP addresses is OPTIONAL, with the
+   exception that if the zone that the nameservers reside in is to be
+   created within the catalog, then they MUST be specified in order that
+   the relevant records can be created in the zone at zone bootstrap
+   time.
 
    If the nameservers are in-bailiwick and address records are therefore
-   required, suitable address records MUST be created in the zone from
-   the entries specified.
+   required, suitable address records MUST be created in the member zone
+   file from the entries specified.
 
-   If the nameservers are in-bailiwick, and an address is not specified,
-   this denotes a broken catalog zone, which MUST NOT be processed.
+   If the nameservers are in-bailiwick of a zone in the catalog, and an
+   address is not specified, this denotes a broken catalog zone, which
+   MUST NOT be processed.
 
    The ns property can be specified multiple times, with one nameserver
    specified per entry.
@@ -237,8 +239,8 @@ Table of Contents
 
 6.  Security Considerations
 
-   This document does not alter the security considerations already
-   outlined in [RFC9432]
+   This document does not alter the security considerations outlined in
+   [RFC9432]
 
 7.  IANA Considerations
 
@@ -295,19 +297,18 @@ Appendix A.  Catalog Zone Example
    The example.net. zone would utilise the default SOA record, but would
    utilise the more specific NS records.
 
-   The A and AAAA records for the default nameservers are in-bailiwick
-   of example.com, and so the records would be expected to be created in
-   that zone, however, they would of course not be expected to be added
-   to the example.net zone.
+   The default nameservers are in-bailiwick of example.com, which is in
+   the catalog, and so the address record details are supplied in order
+   to facilitate the addition of the address records.
 
    catz.invalid. 0 SOA invalid. invalid. 1 3600 600 2419200 3600
    catz.invalid. 0 NS invalid.
    soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com.; "
          "rname=hostmaster.example.com.; refresh=14400; "
          "retry=900; expire=2419200; minimum=3600" )
-   ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.org. ipv4=192.0.2.1 "
+   ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.com. ipv4=192.0.2.1 "
          "ipv6=2001:db8::1" )
-   ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.org. ipv4=192.0.2.2 "
+   ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.com. ipv4=192.0.2.2 "
          "ipv6=2001:db8::2" )
    kahdkh6f.zones.catz.invalid. 0 PTR example.com.
    hajhsjha.zones.catz.invalid. 0 PTR example.net.

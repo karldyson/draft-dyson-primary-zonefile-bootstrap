@@ -1327,7 +1327,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-3.2-2">Clearly an actual SOA record type cannot be used here, and so the parameters to be applied shall be constructed in a TXT record type as follows:<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.2-3">
 <pre>
-soa.boot.$CATZ 0 IN TXT ( "mname:&lt;mname&gt;; rname:&lt;rname&gt;; "
+soa.boot.$CATZ 0 IN TXT ( "mname=&lt;mname&gt;; rname=&lt;rname&gt;; "
       "refresh=&lt;refresh&gt;; retry=&lt;retry&gt;; expire=&lt;expire&gt;; "
       "minimum=&lt;minimum&gt;" )
 </pre><a href="#section-3.2-3" class="pilcrow">¶</a>
@@ -1343,9 +1343,9 @@ soa.boot.$CATZ 0 IN TXT ( "mname:&lt;mname&gt;; rname:&lt;rname&gt;; "
         </h3>
 <p id="section-3.3-1">Actual NS records cannot be used, as we do not want to actually delegate outside of this catalog zone.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">The nameservers will be specified in a TXT record as follows, along with the associated IP addresses, if appropriate or required.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">Speciying the nameserver IP addresses is <span class="bcp14">OPTIONAL</span>, with the exception that if the zone that the nameservers reside in is to be created within the catalog, then they <span class="bcp14">MUST</span> be specified in order that the relevant records can be created in the zone at zone bootstrap time.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">If the nameservers are in-bailiwick and address records are therefore required, suitable address records <span class="bcp14">MUST</span> be created in the zone from the entries specified.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
-<p id="section-3.3-5">If the nameservers are in-bailiwick, and an address is not specified, this denotes a broken catalog zone, which <span class="bcp14">MUST NOT</span> be processed.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">Specifying the nameserver IP addresses is <span class="bcp14">OPTIONAL</span>, with the exception that if the zone that the nameservers reside in is to be created within the catalog, then they <span class="bcp14">MUST</span> be specified in order that the relevant records can be created in the zone at zone bootstrap time.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">If the nameservers are in-bailiwick and address records are therefore required, suitable address records <span class="bcp14">MUST</span> be created in the member zone file from the entries specified.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-5">If the nameservers are in-bailiwick of a zone in the catalog, and an address is not specified, this denotes a broken catalog zone, which <span class="bcp14">MUST NOT</span> be processed.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
 <p id="section-3.3-6">The ns property can be specified multiple times, with one nameserver specified per entry.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.3-7">
 <pre>
@@ -1396,7 +1396,7 @@ ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
       <h2 id="name-security-considerations">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-6-1">This document does not alter the security considerations already outlined in <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span><a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">This document does not alter the security considerations outlined in <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span><a href="#section-6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="IANA">
@@ -1477,7 +1477,7 @@ ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
 <p id="appendix-A-1">The following is an example showing the additional properties and parameters as outlined in this document.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <p id="appendix-A-2">There are defaults specified for the SOA and NS records, which would be used by the example.com. zone.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
 <p id="appendix-A-3">The example.net. zone would utilise the default SOA record, but would utilise the more specific NS records.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
-<p id="appendix-A-4">The A and AAAA records for the default nameservers are in-bailiwick of example.com, and so the records would be expected to be created in that zone, however, they would of course not be expected to be added to the example.net zone.<a href="#appendix-A-4" class="pilcrow">¶</a></p>
+<p id="appendix-A-4">The default nameservers are in-bailiwick of example.com, which is in the catalog, and so the address record details are supplied in order to facilitate the addition of the address records.<a href="#appendix-A-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-A-5">
 <pre>
 catz.invalid. 0 SOA invalid. invalid. 1 3600 600 2419200 3600
@@ -1485,9 +1485,9 @@ catz.invalid. 0 NS invalid.
 soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com.; "
       "rname=hostmaster.example.com.; refresh=14400; "
       "retry=900; expire=2419200; minimum=3600" )
-ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.org. ipv4=192.0.2.1 "
+ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.com. ipv4=192.0.2.1 "
       "ipv6=2001:db8::1" )
-ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.org. ipv4=192.0.2.2 "
+ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.com. ipv4=192.0.2.2 "
       "ipv6=2001:db8::2" )
 kahdkh6f.zones.catz.invalid. 0 PTR example.com.
 hajhsjha.zones.catz.invalid. 0 PTR example.net.
