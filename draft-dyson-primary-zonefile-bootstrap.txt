@@ -4,9 +4,9 @@
 
 Network Working Group                                           K. Dyson
 Internet-Draft                                                Nominet UK
-Updates: 9432 (if approved)                             13 November 2024
+Updates: 9432 (if approved)                             14 November 2024
 Intended status: Standards Track                                        
-Expires: 17 May 2025
+Expires: 18 May 2025
 
 
                 Zonefile Bootstrap on DNS Primary Server
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 May 2025.
+   This Internet-Draft will expire on 18 May 2025.
 
 Copyright Notice
 
@@ -60,24 +60,25 @@ Table of Contents
 
    1.  Introduction
    2.  Conventions and Definitions
-   3.  General Approach
-   4.  Catalog Properties
-     4.1.  Zonefile Bootstrap (boot property)
-     4.2.  Start Of Authority (soa property)
-     4.3.  Nameservers (ns property)
-   5.  Member Zone Properties
-   6.  Name Server Behaviour
-     6.1.  General Behaviour
-   7.  Security Considerations
-   8.  IANA Considerations
-   9.  Normative References
+   3.  Catalog Properties
+     3.1.  Zonefile Bootstrap (boot property)
+     3.2.  Start Of Authority (soa property)
+     3.3.  Nameservers (ns property)
+   4.  Member Zone Properties
+   5.  Name Server Behaviour
+     5.1.  General Behaviour
+   6.  Security Considerations
+   7.  IANA Considerations
+   8.  Normative References
    Appendix A.  Catalog Zone Example
    Appendix B.  Author Notes/Thoughts
      B.1.  Is catalog zones the right place for this?
      B.2.  DNSSEC
-     B.3.  coo Property
-     B.4.  soa Property
-     B.5.  ns Property
+     B.3.   Properties
+       B.3.1.   General
+       B.3.2.  coo Property
+       B.3.3.  soa Property
+       B.3.4.  ns Property
    Appendix C.  Change Log
      C.1.  00 - Initial draft
    Acknowledgments
@@ -105,26 +106,25 @@ Table of Contents
    of signalling to the primary server that a new zone file is to be
    created.
 
-   Operators of large scale DNS systems will want to be able to signal
+   Operators of large scale DNS systems may want to be able to signal
    the creation of a new zone without wanting to be tied to a particular
-   vendor's software, and without the need or overhead of engineering a
-   bespoke solution with the ongoing need to support and maintain that.
+   vendor's proprietary software, and without the need or overhead of
+   engineering a bespoke solution with the ongoing need to support and
+   maintain that.
 
-   This document sets out to instigate discussion of possible solutions
-   to this problem with an initial strawman.
+   It is anticipated that the reason for desiring the ability to
+   dynamically provision a zone on the primary server is because the
+   operator will then manage resource records in the zone via Dynamic
+   Updates [RFC2136], and will want to distribute the zones to their
+   secondary servers via DNS Catalog Zones [RFC9432].
 
-   It may be considered that this is "nameserver configuration",
-   however, it has strong parallels in this regard to the
-   "configuration" on secondary servers, including such considerations
-   as to which entities are allowed to notify and/or transfer the zone,
-   as are conveyed to those secondary servers in [RFC9432] DNS Catalog
-   Zones.  Indeed, much of the same configuration may be needed by or
-   shared with the primary server for those same zones.
+   The scope of this document is therefore confined to the initial
+   bootstrap provisioning of the zone file, and MAY include signalling
+   of initial DNSSEC policy or configuration (see
+   {dnssecConsideration}).
 
-   The scope may of this document is confined to the initial bootstrap
-   provisioning of the zone file, and broader provisioning of the base
-   nameserver configuration is beyond the scope of this discussion and
-   document.
+   Broader provisioning of the base nameserver configuration is beyond
+   the scope of this discussion and document.
 
 2.  Conventions and Definitions
 
@@ -137,22 +137,17 @@ Table of Contents
    This document doesn't alter the conventions and definitions as
    defined in [RFC9432] DNS Catalog Zones.
 
-3.  General Approach
+3.  Catalog Properties
 
-   It is anticipated that the reason for desiring the ability to
-   dynamically provision a zone on the primary server is because the
-   operator will then manage resource records in the zone via Dynamic
-   Updates [RFC2136], and will want to distribute the zones to their
-   secondary servers via DNS Catalog Zones [RFC9432].
-
-4.  Catalog Properties
-
-4.1.  Zonefile Bootstrap (boot property)
+3.1.  Zonefile Bootstrap (boot property)
 
    When suitable configuration is activated in the implementation, and a
    new entry is added to the catalog being served by the primary, the
-   primary should create the underlying zonefile with the parameters
-   outlined in the boot property.
+   primary should create the underlying zonefile with the properties and
+   parameters outlined in the boot property.
+
+   The boot property is the parent label to the other labels that
+   facilitate the adding of the various properties and parameters.
 
    The implementation MAY permit the following on a global, or per
    catalog basis, by way of suitable configuration parameters:
@@ -166,7 +161,7 @@ Table of Contents
    *  The zone file is ALWAYS created, overwriting any existing zone
       file
 
-4.2.  Start Of Authority (soa property)
+3.2.  Start Of Authority (soa property)
 
    The soa property is used to specify the SOA that will be applied to
    the created zonefile for the member zone.
@@ -181,12 +176,12 @@ Table of Contents
 
    There MUST NOT be more than a single soa property record with the
    exception that a member zone record can be specified to override the
-   default (see Section 5 below).
+   default (see Section 4 below).
 
    Multiple soa property records constitues a broken catalog zone, which
    MUST NOT be processed (see [RFC9432] section 5.1).
 
-4.3.  Nameservers (ns property)
+3.3.  Nameservers (ns property)
 
    Actual NS records cannot be used, as we do not want to actually
    delegate outside of this catalog zone.
@@ -212,7 +207,7 @@ Table of Contents
    ns.boot.$CATZ 0 IN TXT ( "ns=some.name.server.; "
          "a=192.0.2.1; aaaa=2001:db8::1" )
 
-5.  Member Zone Properties
+4.  Member Zone Properties
 
    The default properties outlined above can be overridden on a per zone
    basis as follows.  Where per zone entries are specified in the
@@ -229,9 +224,9 @@ Table of Contents
    ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
          "a=192.0.2.1; aaaa=2001:db8::1" )
 
-6.  Name Server Behaviour
+5.  Name Server Behaviour
 
-6.1.  General Behaviour
+5.1.  General Behaviour
 
    The parameters specified in the boot property will contain hostnames,
    for example in the NS records and in the SOA; these will be
@@ -240,12 +235,12 @@ Table of Contents
    zone file, they MUST be fully quallified in the parameter
    specification in the property.
 
-7.  Security Considerations
+6.  Security Considerations
 
    This document does not alter the security considerations already
    outlined in [RFC9432]
 
-8.  IANA Considerations
+7.  IANA Considerations
 
    IANA is requested to add the following entries to the registry:
 
@@ -268,7 +263,7 @@ Table of Contents
 
    Field meanings are unchanged from [RFC9432]
 
-9.  Normative References
+8.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -345,6 +340,14 @@ B.1.  Is catalog zones the right place for this?
        operations API, which is waaaaay beyond the scope of this
        document/standardisation
 
+   It may be considered that this is "nameserver configuration",
+   however, it has strong parallels in this regard to the
+   "configuration" on secondary servers, including such considerations
+   as to which entities are allowed to notify and/or transfer the zone,
+   as are conveyed to those secondary servers in [RFC9432] DNS Catalog
+   Zones.  Indeed, much of the same configuration may be needed by or
+   shared with the primary server for those same zones.
+
    TODO - add more detail explaining the above, reasoning, etc...?
 
 B.2.  DNSSEC
@@ -355,12 +358,20 @@ B.2.  DNSSEC
    very nice to be able to signal to the signer that it should create
    some keys, sign the zone...
 
-B.3.  coo Property
+B.3.   Properties
+
+B.3.1.   General
+
+   Should the properties be listed in the registry as soa.boot and
+   ns.boot, given boot itself is a placeholder label, and doesn't
+   (currently?) take any parameters or records of its own?
+
+B.3.2.  coo Property
 
    Are there any considerations around change of ownership that need
    mentioning or documenting here...?
 
-B.4.  soa Property
+B.3.3.  soa Property
 
    Consideration was given as to whether things like SOA parameters
    should be individual records, but it seemed unnecessary to break them
@@ -381,9 +392,12 @@ B.4.  soa Property
    that the operator would immediatly overwrite them with "correct"
    values...?
 
-B.5.  ns Property
+B.3.4.  ns Property
 
    Is there a circular dependency or race condition issue here...?
+
+   Should we use ipv4 and ipv6 style parameter naming instead of a and
+   aaaa, to be more consistent with, say, SVCB notation?
 
 Appendix C.  Change Log
 
