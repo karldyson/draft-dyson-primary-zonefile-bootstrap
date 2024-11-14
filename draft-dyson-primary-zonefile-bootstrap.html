@@ -7,11 +7,11 @@
 <title>Zonefile Bootstrap on DNS Primary Server</title>
 <meta content="Karl Dyson" name="author">
 <meta content="
-       This document specifies an update to   such that the primary DNS server for a zone can bootstrap the underlying zonefile using information contained within a catalog zone. 
+       This document specifies an update to   such that the primary DNS server for a zone can bootstrap the underlying zone file using information contained within a catalog zone. 
     " name="description">
 <meta content="xml2rfc 3.24.0" name="generator">
 <meta content="catalog zone" name="keyword">
-<meta content="zonefile bootstrap" name="keyword">
+<meta content="zone file bootstrap" name="keyword">
 <meta content="primary server" name="keyword">
 <meta content="draft-dyson-primary-zonefile-bootstrap-latest" name="ietf.draft">
 <!-- Generator version information:
@@ -1117,7 +1117,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">Zonefile Bootstrap on DNS Primary Server</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document specifies an update to <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> such that the primary DNS server for a zone can bootstrap the underlying zonefile using information contained within a catalog zone.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document specifies an update to <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> such that the primary DNS server for a zone can bootstrap the underlying zone file using information contained within a catalog zone.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1185,13 +1185,35 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-catalog-properties" class="internal xref">Catalog Properties</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-zonefile-bootstrap-boot-pro" class="internal xref">Zonefile Bootstrap (boot property)</a></p>
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-zone-file-bootstrap-boot-pr" class="internal xref">Zone File Bootstrap (boot property)</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-start-of-authority-soa-prop" class="internal xref">Start Of Authority (soa property)</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.1">
+                    <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="auto internal xref">3.2.1</a>.  <a href="#name-parameters" class="internal xref">Parameters</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.2">
+                    <p id="section-toc.1-1.3.2.2.2.2.1"><a href="#section-3.2.2" class="auto internal xref">3.2.2</a>.  <a href="#name-example" class="internal xref">Example</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
                 <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-nameservers-ns-property" class="internal xref">Nameservers (ns property)</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3.2.1">
+                    <p id="section-toc.1-1.3.2.3.2.1.1"><a href="#section-3.3.1" class="auto internal xref">3.3.1</a>.  <a href="#name-name-parameter" class="internal xref">name Parameter</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3.2.2">
+                    <p id="section-toc.1-1.3.2.3.2.2.1"><a href="#section-3.3.2" class="auto internal xref">3.3.2</a>.  <a href="#name-ipv4-and-ipv6-parameters" class="internal xref">ipv4 and ipv6 Parameters</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3.2.3">
+                    <p id="section-toc.1-1.3.2.3.2.3.1"><a href="#section-3.3.3" class="auto internal xref">3.3.3</a>.  <a href="#name-example-2" class="internal xref">Example</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-dnssec-dnssec-property" class="internal xref">DNSSEC (dnssec Property)</a></p>
 </li>
             </ul>
 </li>
@@ -1272,10 +1294,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <p id="section-1-1">Once a DNS zone file exists, there are standards compliant ways to distribute that zone to secondary servers in <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> DNS Catalog Zones, as well as standards compliant ways to alter the contents of the zone in <span>[<a href="#RFC2136" class="cite xref">RFC2136</a>]</span> Dynamic Updates.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">However there is no standards compliant method of bootstrapping the presence of a new empty zone file ready for those two processes to work with.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">There are vendor specific methods, such as RNDC for ISC BIND, which can be used remotely, but which still requires you to have created the underlying zone file on the primary server filesystem.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">PowerDNS has a proprietary API that can be used, and other products likewise have mechanisms.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">PowerDNS has a proprietary API that can be used, and other products likewise have proprietary mechanisms.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">However, there's no standards compliant vendor independent mechanism of signalling to the primary server that a new zone file is to be created.<a href="#section-1-5" class="pilcrow">¶</a></p>
 <p id="section-1-6">Operators of large scale DNS systems may want to be able to signal the creation of a new zone without wanting to be tied to a particular vendor's proprietary software, and without the need or overhead of engineering a bespoke solution with the ongoing need to support and maintain that.<a href="#section-1-6" class="pilcrow">¶</a></p>
-<p id="section-1-7">It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates <span>[<a href="#RFC2136" class="cite xref">RFC2136</a>]</span>, and will want to distribute the zones to their secondary servers via DNS Catalog Zones <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span>.<a href="#section-1-7" class="pilcrow">¶</a></p>
+<p id="section-1-7">Having dynamically provisioned a new zone on the primary server, the operator may then manage resource records in the zone via Dynamic Updates <span>[<a href="#RFC2136" class="cite xref">RFC2136</a>]</span>, and may also want to distribute the zones to their secondary servers via DNS Catalog Zones <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span>.<a href="#section-1-7" class="pilcrow">¶</a></p>
 <p id="section-1-8">The scope of this document is therefore confined to the initial bootstrap provisioning of the zone file, and <span class="bcp14">MAY</span> include signalling of initial DNSSEC policy or configuration (see <a href="#dnssecConsideration" class="auto internal xref">Appendix B.2</a>).<a href="#section-1-8" class="pilcrow">¶</a></p>
 <p id="section-1-9">Broader provisioning of the base nameserver configuration is beyond the scope of this discussion and document.<a href="#section-1-9" class="pilcrow">¶</a></p>
 </section>
@@ -1289,7 +1311,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
 appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
-<p id="section-2-2">This document doesn't alter the conventions and definitions as defined in <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> DNS Catalog Zones.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-2">The following is in addition to the conventions and definitions as defined in <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> DNS Catalog Zones.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">Within DNS servers, specifically when transferring zones to other servers, there is the concept of a primary server and a secondary server in each transfer relationship.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-4">Each secondary server will be transferring the zone from a configured upstream primary server, which may, itself, actually be a secondary server to a further upstream primary server, and so on.<a href="#section-2-4" class="pilcrow">¶</a></p>
+<p id="section-2-5">However, within this document, the term "primary server" is used specifically to mean the ultimate upstream primary server, where the resource records that form the zone's content are maintained, and thus, that server does not transfer the zone from another server.<a href="#section-2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="catalog-properties">
@@ -1297,17 +1322,19 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-catalog-properties">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-catalog-properties" class="section-name selfRef">Catalog Properties</a>
       </h2>
-<div id="zonefile-bootstrap-boot-property">
+<p id="section-3-1">If bootstrapping of the underlying zone file is not required or is disabled in the implementation configuration, then the various boot properties defined in this document <span class="bcp14">MAY</span> be absent, and in that context, their absence DOES NOT constitute a broken catalog zone.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">If the bootstrapping of the underlying zone file is enabled, and the properties and parameters defined below constitute a broken configuration as defined in this document, then the catalog <span class="bcp14">MUST NOT</span> be processed (Section 5.1 <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span>).<a href="#section-3-2" class="pilcrow">¶</a></p>
+<div id="zone-file-bootstrap-boot-property">
 <section id="section-3.1">
-        <h3 id="name-zonefile-bootstrap-boot-pro">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-zonefile-bootstrap-boot-pro" class="section-name selfRef">Zonefile Bootstrap (boot property)</a>
+        <h3 id="name-zone-file-bootstrap-boot-pr">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-zone-file-bootstrap-boot-pr" class="section-name selfRef">Zone File Bootstrap (boot property)</a>
         </h3>
-<p id="section-3.1-1">When suitable configuration is activated in the implementation, and a new member zone entry is added to the catalog being served by the primary, the primary should create the underlying zonefile with the properties and parameters outlined in the boot property.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">When suitable configuration is activated in the implementation, and a new member zone entry is added to the catalog being served by the primary server, the primary server should create the underlying zone file with the properties and parameters outlined in the boot property.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">The boot property is the parent label to the other labels that facilitate the adding of the various properties and parameters.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">The implementation <span class="bcp14">MAY</span> permit the following on a global, or per catalog basis, by way of suitable configuration parameters:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">The implementation may permit the following on a global, or per catalog basis, by way of suitable configuration parameters:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.1-4.1">
-            <p id="section-3.1-4.1.1">The zone file is ONLY created if the zonefile does not already exist<a href="#section-3.1-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-4.1.1">The zone file is ONLY created if the zone file does not already exist<a href="#section-3.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-4.2">
             <p id="section-3.1-4.2.1">The zone file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server)<a href="#section-3.1-4.2.1" class="pilcrow">¶</a></p>
@@ -1316,6 +1343,8 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             <p id="section-3.1-4.3.1">The zone file is ALWAYS created, overwriting any existing zone file<a href="#section-3.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
+<p id="section-3.1-5">The second of the above options is noteworthy, as this mechanism may be used for the bootstrapping of a downstream signer configuration without necessarily being used to signal the bootstrapping of the zone file itself on the primary server.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.1-6">A number of sub-properties, expressed as labels within the bailiwick of the "boot" label, define the bootstrap parameters.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="start-of-authority-soa-property">
@@ -1323,17 +1352,33 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-start-of-authority-soa-prop">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-start-of-authority-soa-prop" class="section-name selfRef">Start Of Authority (soa property)</a>
         </h3>
-<p id="section-3.2-1">The soa property is used to specify the SOA that will be applied to the created zonefile for the member zone.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">Clearly an actual SOA record type cannot be used here, and so the parameters to be applied shall be constructed in a TXT record type as follows:<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-3">
-<pre>
-soa.boot.$CATZ 0 IN TXT ( "mname=&lt;mname&gt;; rname=&lt;rname&gt;; "
-      "refresh=&lt;refresh&gt;; retry=&lt;retry&gt;; expire=&lt;expire&gt;; "
-      "minimum=&lt;minimum&gt;" )
-</pre><a href="#section-3.2-3" class="pilcrow">¶</a>
+<p id="section-3.2-1">The soa property is used to specify the SOA that will be applied to the created zone file for the member zone.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">There <span class="bcp14">MUST</span> be one and ONLY one soa property record with the exception that a member zone record can be specified to override the default (see <a href="#memberZoneSection" class="auto internal xref">Section 4</a> below).<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">Multiple soa property records within a given scope constitutes a broken catalog zone.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">Absence of a soa property similarly constitues a broken catalog zone.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<div id="parameters">
+<section id="section-3.2.1">
+          <h4 id="name-parameters">
+<a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-parameters" class="section-name selfRef">Parameters</a>
+          </h4>
+<p id="section-3.2.1-1">With the exception of the serial number, the SOA record parameters are supplied as key=value pairs in the RDATA of a TXT resource record, with the pairs separated by whitespace.<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-2">The keys are as per the field names expected in a SOA record as defined in Section 3.3.13 of <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>.<a href="#section-3.2.1-2" class="pilcrow">¶</a></p>
+</section>
 </div>
-<p id="section-3.2-4">There <span class="bcp14">MUST NOT</span> be more than a single soa property record with the exception that a member zone record can be specified to override the default (see <a href="#memberZoneSection" class="auto internal xref">Section 4</a> below).<a href="#section-3.2-4" class="pilcrow">¶</a></p>
-<p id="section-3.2-5">Multiple soa property records constitues a broken catalog zone, which <span class="bcp14">MUST NOT</span> be processed (see <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> section 5.1).<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+<div id="example">
+<section id="section-3.2.2">
+          <h4 id="name-example">
+<a href="#section-3.2.2" class="section-number selfRef">3.2.2. </a><a href="#name-example" class="section-name selfRef">Example</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.2.2-1">
+<pre>
+soa.boot.$CATZ 0 IN TXT ( "mname=&lt;mname&gt; rname=&lt;rname&gt; "
+      "refresh=&lt;refresh&gt; retry=&lt;retry&gt; expire=&lt;expire&gt; "
+      "minimum=&lt;minimum&gt;" )
+</pre><a href="#section-3.2.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
 </section>
 </div>
 <div id="nameservers-ns-property">
@@ -1342,17 +1387,57 @@ soa.boot.$CATZ 0 IN TXT ( "mname=&lt;mname&gt;; rname=&lt;rname&gt;; "
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-nameservers-ns-property" class="section-name selfRef">Nameservers (ns property)</a>
         </h3>
 <p id="section-3.3-1">Actual NS records cannot be used, as we do not want to actually delegate outside of this catalog zone.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<p id="section-3.3-2">The nameservers will be specified in a TXT record as follows, along with the associated IP addresses, if appropriate or required.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">Specifying the nameserver IP addresses is <span class="bcp14">OPTIONAL</span>, with the exception that if the zone that the nameservers reside in is to be created within the catalog, then they <span class="bcp14">MUST</span> be specified in order that the relevant records can be created in the zone at zone bootstrap time.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">If the nameservers are in-bailiwick and address records are therefore required, suitable address records <span class="bcp14">MUST</span> be created in the member zone file from the entries specified.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
-<p id="section-3.3-5">If the nameservers are in-bailiwick of a zone in the catalog, and an address is not specified, this denotes a broken catalog zone, which <span class="bcp14">MUST NOT</span> be processed.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
-<p id="section-3.3-6">The ns property can be specified multiple times, with one nameserver specified per entry.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.3-7">
-<pre>
-ns.boot.$CATZ 0 IN TXT ( "ns=some.name.server.; "
-      "ipv4=192.0.2.1; ipv6=2001:db8::1" )
-</pre><a href="#section-3.3-7" class="pilcrow">¶</a>
+<p id="section-3.3-2">The nameserver parameters are supplied as key=value pairs in the RDATA of a TXT resource record, with the pairs separated by whitespace.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">If the nameservers are in-bailiwick and address records are therefore required, suitable address records <span class="bcp14">MUST</span> be created in the member zone file from the parameters specified.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">If the nameservers are in-bailiwick of a zone in the catalog, and an address is not specified, this would result in a zone that won't load; This denotes a broken catalog zone.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-5">There <span class="bcp14">MUST</span> be at least one ns entry that can be applied to a member zone, either specified directly as per <a href="#memberZoneSection" class="auto internal xref">Section 4</a> or in the catalog section to be inherited.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<p id="section-3.3-6">Therefore, catalog zone that contains no nameserver entries constitutes a broken catalog zone.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
+<p id="section-3.3-7">The ns property can be specified multiple times, with one nameserver specified per entry.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
+<div id="name-parameter">
+<section id="section-3.3.1">
+          <h4 id="name-name-parameter">
+<a href="#section-3.3.1" class="section-number selfRef">3.3.1. </a><a href="#name-name-parameter" class="section-name selfRef">name Parameter</a>
+          </h4>
+<p id="section-3.3.1-1">The "name" parameter <span class="bcp14">MUST</span> be present, and contains the name of the nameserver as it should appear in the zone file. To avoid ambiguity in behaviour, this <span class="bcp14">SHOULD</span> be a fully qualified and dot-terminated name.<a href="#section-3.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-2">The value of the "name" parameter <span class="bcp14">MUST</span> be compliant with Section 3.3.11 of <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>.<a href="#section-3.3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-3">A ns property record that does not contain a "name" parameter consistutes a broken catalog zone.<a href="#section-3.3.1-3" class="pilcrow">¶</a></p>
+</section>
 </div>
+<div id="ipv4-and-ipv6-parameters">
+<section id="section-3.3.2">
+          <h4 id="name-ipv4-and-ipv6-parameters">
+<a href="#section-3.3.2" class="section-number selfRef">3.3.2. </a><a href="#name-ipv4-and-ipv6-parameters" class="section-name selfRef">ipv4 and ipv6 Parameters</a>
+          </h4>
+<p id="section-3.3.2-1">The "ipv4" and "ipv6" parameters are <span class="bcp14">OPTIONAL</span>. They contain the IP address(es) of the hostname specified in the "name" parameter.<a href="#section-3.3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-2">If the value in the "name" parameter is in-bailwick, and hence requires that the relevant address enties are also created in the zone, at least one of either the "ipv4" or "ipv6" parameters <span class="bcp14">MUST</span> be specified.<a href="#section-3.3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-3">The value of the "ipv4" parameter, if present, <span class="bcp14">MUST</span> be a valid IPv4 address, compliant with Section 3.4.1 of <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>.<a href="#section-3.3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-4">The value of the "ipv6" parameter, if present, <span class="bcp14">MUST</span> be a valid IPv6 address, compliant with Section 2.1 of <span>[<a href="#RFC3596" class="cite xref">RFC3596</a>]</span>.<a href="#section-3.3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-5">A ns property record that contains an in-bailiwick name, but does not contain at least one address parameter constitutes a broken catalog zone.<a href="#section-3.3.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="example-1">
+<section id="section-3.3.3">
+          <h4 id="name-example-2">
+<a href="#section-3.3.3" class="section-number selfRef">3.3.3. </a><a href="#name-example-2" class="section-name selfRef">Example</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.3.3-1">
+<pre>
+ns.boot.$CATZ 0 IN TXT ( "name=some.name.server. "
+      "ipv4=192.0.2.1 ipv6=2001:db8::1" )
+ns.boot.$CATZ 0 IN TXT ( "name=another.name.server. "
+      "ipv4=192.0.2.129 ipv6=2001:db8:44::1" )
+</pre><a href="#section-3.3.3-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="dnssec-dnssec-property">
+<section id="section-3.4">
+        <h3 id="name-dnssec-dnssec-property">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-dnssec-dnssec-property" class="section-name selfRef">DNSSEC (dnssec Property)</a>
+        </h3>
+<p id="section-3.4-1">Placeholder for definition of how to signal to a signer that we wish to bootstrap keys and sign the newly created zone...<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1363,15 +1448,15 @@ ns.boot.$CATZ 0 IN TXT ( "ns=some.name.server.; "
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-member-zone-properties" class="section-name selfRef">Member Zone Properties</a>
       </h2>
 <p id="section-4-1">The default properties outlined above can be overridden on a per member zone basis. Where per member zone entries are specified in the catalog, they <span class="bcp14">MUST</span> be used in preference to the default properties specified at the catalog level.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">A subset <span class="bcp14">MAY</span> be specified here; for example, the SOA could be omitted here and just the NS records or DNSSEC parameters specified, with the omitted properties taken from the catalog level values.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-2">A subset <span class="bcp14">MAY</span> be specified here; for example, the SOA could be omitted here and just the NS records or DNSSEC parameters specified, with the omitted properties inherited from the catalog level values.<a href="#section-4-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4-3">
 <pre>
 &lt;unique-N&gt;.zones.$CATZ 0 IN PTR example.com.
-soa.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "mname=&lt;mname&gt;; "
-      "rname=&lt;rname&gt;; refresh=&lt;refresh&gt;; retry=&lt;retry&gt;; "
-      "expire:&lt;expire&gt;; minimum:&lt;minimum&gt;" )
-ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
-      "ipv4=192.0.2.1; ipv6=2001:db8::1" )
+soa.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "mname=&lt;mname&gt; "
+      "rname=&lt;rname&gt; refresh=&lt;refresh&gt; retry=&lt;retry&gt; "
+      "expire=&lt;expire&gt; minimum=&lt;minimum&gt;" )
+ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "name=some.name.server. "
+      "ipv4=192.0.2.1 ipv6=2001:db8::1" )
 </pre><a href="#section-4-3" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1439,6 +1524,12 @@ ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
             <td class="text-left" rowspan="1" colspan="1">Standards Track</td>
             <td class="text-left" rowspan="1" colspan="1">this document</td>
           </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">dnssec</td>
+            <td class="text-left" rowspan="1" colspan="1">DNSSEC</td>
+            <td class="text-left" rowspan="1" colspan="1">Standards Track</td>
+            <td class="text-left" rowspan="1" colspan="1">this document</td>
+          </tr>
         </tbody>
       </table>
 <p id="section-7-5">Field meanings are unchanged from <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span><a href="#section-7-5" class="pilcrow">¶</a></p>
@@ -1450,6 +1541,10 @@ ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
+<dt id="RFC1035">[RFC1035]</dt>
+      <dd>
+<span class="refAuthor">Mockapetris, P.</span>, <span class="refTitle">"Domain names - implementation and specification"</span>, <span class="seriesInfo">STD 13</span>, <span class="seriesInfo">RFC 1035</span>, <span class="seriesInfo">DOI 10.17487/RFC1035</span>, <time datetime="1987-11" class="refDate">November 1987</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc1035">https://www.rfc-editor.org/rfc/rfc1035</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
       <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
@@ -1457,6 +1552,10 @@ ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
 <dt id="RFC2136">[RFC2136]</dt>
       <dd>
 <span class="refAuthor">Vixie, P., Ed.</span>, <span class="refAuthor">Thomson, S.</span>, <span class="refAuthor">Rekhter, Y.</span>, and <span class="refAuthor">J. Bound</span>, <span class="refTitle">"Dynamic Updates in the Domain Name System (DNS UPDATE)"</span>, <span class="seriesInfo">RFC 2136</span>, <span class="seriesInfo">DOI 10.17487/RFC2136</span>, <time datetime="1997-04" class="refDate">April 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2136">https://www.rfc-editor.org/rfc/rfc2136</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3596">[RFC3596]</dt>
+      <dd>
+<span class="refAuthor">Thomson, S.</span>, <span class="refAuthor">Huitema, C.</span>, <span class="refAuthor">Ksinant, V.</span>, and <span class="refAuthor">M. Souissi</span>, <span class="refTitle">"DNS Extensions to Support IP Version 6"</span>, <span class="seriesInfo">STD 88</span>, <span class="seriesInfo">RFC 3596</span>, <span class="seriesInfo">DOI 10.17487/RFC3596</span>, <time datetime="2003-10" class="refDate">October 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3596">https://www.rfc-editor.org/rfc/rfc3596</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
       <dd>
@@ -1482,18 +1581,18 @@ ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
 <pre>
 catz.invalid. 0 SOA invalid. invalid. 1 3600 600 2419200 3600
 catz.invalid. 0 NS invalid.
-soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com.; "
-      "rname=hostmaster.example.com.; refresh=14400; "
-      "retry=900; expire=2419200; minimum=3600" )
-ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.com. ipv4=192.0.2.1 "
+soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com. "
+      "rname=hostmaster.example.com. refresh=14400 "
+      "retry=900 expire=2419200 minimum=3600" )
+ns.boot.catz.invalid. 0 TXT ( "name=ns1.example.com. ipv4=192.0.2.1 "
       "ipv6=2001:db8::1" )
-ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.com. ipv4=192.0.2.2 "
+ns.boot.catz.invalid. 0 TXT ( "name=ns2.example.com. ipv4=192.0.2.2 "
       "ipv6=2001:db8::2" )
 kahdkh6f.zones.catz.invalid. 0 PTR example.com.
 hajhsjha.zones.catz.invalid. 0 PTR example.net.
-ns.hajhsjha.zones.catz.invalid. 0 TXT "ns=ns.example.org"
-ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns=ns.example.net"
-      "ipv4=192.0.2.250; ipv6=2001:db8:ff::149" )
+ns.hajhsjha.zones.catz.invalid. 0 TXT "name=ns.example.org"
+ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
+      "ipv4=192.0.2.250 ipv6=2001:db8:ff::149" )
 </pre><a href="#appendix-A-5" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1523,7 +1622,8 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns=ns.example.net"
 </li>
         </ol>
 <p id="appendix-B.1-4">It may be considered that this is "nameserver configuration", however, it has strong parallels in this regard to the "configuration" on secondary servers, including such considerations as to which entities are allowed to notify and/or transfer the zone, as are conveyed to those secondary servers in <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span> DNS Catalog Zones. Indeed, much of the same configuration may be needed by or shared with the primary server for those same zones.<a href="#appendix-B.1-4" class="pilcrow">¶</a></p>
-<p id="appendix-B.1-5">TODO - add more detail explaining the above, reasoning, etc...?<a href="#appendix-B.1-5" class="pilcrow">¶</a></p>
+<p id="appendix-B.1-5">Implementing via an extension of catalog zones feels like it closes the gap in the end-to-end ecosystem whereby catalog zones + dynamic updates gives an end-to-end approach to the creation of a zone, its underlying file, distribution of that zone to secondary servers, and the ongoing manipulation of records in the zone.<a href="#appendix-B.1-5" class="pilcrow">¶</a></p>
+<p id="appendix-B.1-6">TODO - add more detail explaining the above, reasoning, etc...?<a href="#appendix-B.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="dnssecConsideration">
@@ -1562,8 +1662,8 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns=ns.example.net"
           </h4>
 <p id="appendix-B.3.3-1">Consideration was given as to whether things like SOA parameters should be individual records, but it seemed unnecessary to break them out and create the additional records.<a href="#appendix-B.3.3-1" class="pilcrow">¶</a></p>
 <p id="appendix-B.3.3-2">Should we permit the property to be made up of multiple TXT records so long as a given parameter is not repeated?<a href="#appendix-B.3.3-2" class="pilcrow">¶</a></p>
-<p id="appendix-B.3.3-3">Should we specify an soa serial format? or an initial soa serial value...?<a href="#appendix-B.3.3-3" class="pilcrow">¶</a></p>
-<p id="appendix-B.3.3-4">Given that it's pretty much expected that the operator is going to start making changes to the zone via dynamic updates, it'd be reasonable to expect them to be able to set those parameters. Which does beg the question, do we need to specify soa and nameserver values at all, or just specify that the zonefile is or is not to be created, and fill some template default values with the expectation that the operator would immediatly overwrite them with "correct" values...?<a href="#appendix-B.3.3-4" class="pilcrow">¶</a></p>
+<p id="appendix-B.3.3-3">Should we specify an soa serial format? or an initial soa serial value...? If not, should we specify in the text, or leave it to the implemention, which may have a default, such as BIND's "serial-update-method"<a href="#appendix-B.3.3-3" class="pilcrow">¶</a></p>
+<p id="appendix-B.3.3-4">Given that it's pretty much expected that the operator is going to start making changes to the zone via dynamic updates, it'd be reasonable to expect them to be able to set those parameters. Which does beg the question, do we need to specify soa and nameserver values at all, or just specify that the zone file is or is not to be created, and fill some template default values with the expectation that the operator would immediatly overwrite them with "correct" values...?<a href="#appendix-B.3.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ns-property">
