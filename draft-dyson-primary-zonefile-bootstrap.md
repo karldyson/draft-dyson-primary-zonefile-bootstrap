@@ -16,6 +16,8 @@ keyword:
  - catalog zone
  - zonefile bootstrap
  - primary server
+#venue:
+#  github: karldyson/draft-dyson-primary-zonefile-bootstrap
 
 author:
  -
@@ -57,13 +59,13 @@ PowerDNS has a proprietary API that can be used, and other products likewise hav
 
 However, there's no standards compliant vendor independent mechanism of signalling to the primary server that a new zone file is to be created.
 
-Operators of large scale DNS systems will want to be able to signal the creation of a new zone without wanting to be tied to a particular vendor's software, and without the need or overhead of engineering a bespoke solution with the ongoing need to support and maintain that.
+Operators of large scale DNS systems may want to be able to signal the creation of a new zone without wanting to be tied to a particular vendor's proprietary software, and without the need or overhead of engineering a bespoke solution with the ongoing need to support and maintain that.
 
-This document sets out to instigate discussion of possible solutions to this problem with an initial strawman.
+It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and will want to distribute the zones to their secondary servers via DNS Catalog Zones {{RFC9432}}.
 
-It may be considered that this is "nameserver configuration", however, it has strong parallels in this regard to the "configuration" on secondary servers, including such considerations as to which entities are allowed to notify and/or transfer the zone, as are conveyed to those secondary servers in {{RFC9432}} DNS Catalog Zones. Indeed, much of the same configuration may be needed by or shared with the primary server for those same zones.
+The scope of this document is therefore confined to the initial bootstrap provisioning of the zone file, and MAY include signalling of initial DNSSEC policy or configuration (see {dnssecConsideration}).
 
-The scope may of this document is confined to the initial bootstrap provisioning of the zone file, and broader provisioning of the base nameserver configuration is beyond the scope of this discussion and document.
+Broader provisioning of the base nameserver configuration is beyond the scope of this discussion and document.
 
 # Conventions and Definitions
 
@@ -71,15 +73,13 @@ The scope may of this document is confined to the initial bootstrap provisioning
 
 This document doesn't alter the conventions and definitions as defined in {{RFC9432}} DNS Catalog Zones.
 
-# General Approach
-
-It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and will want to distribute the zones to their secondary servers via DNS Catalog Zones {{RFC9432}}.
-
 # Catalog Properties
 
 ## Zonefile Bootstrap (boot property)
 
-When suitable configuration is activated in the implementation, and a new entry is added to the catalog being served by the primary, the primary should create the underlying zonefile with the parameters outlined in the boot property.
+When suitable configuration is activated in the implementation, and a new entry is added to the catalog being served by the primary, the primary should create the underlying zonefile with the properties and parameters outlined in the boot property.
+
+The boot property is the parent label to the other labels that facilitate the adding of the various properties and parameters.
 
 The implementation MAY permit the following on a global, or per catalog basis, by way of suitable configuration parameters:
 
@@ -211,17 +211,25 @@ It does feel a little bit like it muddies the waters between zone distribution a
 1. It feels less like Dynamic Updates would be the right place for it
 1. An API for *just* zone bootstrapping feels like a big thing that would likely not get implemented, and would likely be a part of a wider implementation's general nameserver configuration and operations API, which is waaaaay beyond the scope of this document/standardisation
 
+It may be considered that this is "nameserver configuration", however, it has strong parallels in this regard to the "configuration" on secondary servers, including such considerations as to which entities are allowed to notify and/or transfer the zone, as are conveyed to those secondary servers in {{RFC9432}} DNS Catalog Zones. Indeed, much of the same configuration may be needed by or shared with the primary server for those same zones.
+
 TODO - add more detail explaining the above, reasoning, etc...?
 
-## DNSSEC
+## DNSSEC {#dnssecConsideration}
 
 It seems that it'd be useful to signal initial policy/settings for DNSSEC in a standardised way also, but the primary might, or might not be the signer; the signer may be downstream. But it might be very nice to be able to signal to the signer that it should create some keys, sign the zone...
 
-## coo Property
+## Properties
+
+### General
+
+Should the properties be listed in the registry as soa.boot and ns.boot, given boot itself is a placeholder label, and doesn't (currently?) take any parameters or records of its own?
+
+### coo Property
 
 Are there any considerations around change of ownership that need mentioning or documenting here...?
 
-## soa Property
+### soa Property
 
 Consideration was given as to whether things like SOA parameters should be individual records, but it seemed unnecessary to break them out and create the additional records.
 
@@ -231,9 +239,11 @@ Should we specify an soa serial format? or an initial soa serial value...?
 
 Given that it's pretty much expected that the operator is going to start making changes to the zone via dynamic updates, it'd be reasonable to expect them to be able to set those parameters. Which does beg the question, do we need to specify soa and nameserver values at all, or just specify that the zonefile is or is not to be created, and fill some template default values with the expectation that the operator would immediatly overwrite them with "correct" values...?
 
-## ns Property
+### ns Property
 
 Is there a circular dependency or race condition issue here...?
+
+Should we use ipv4 and ipv6 style parameter naming instead of a and aaaa, to be more consistent with, say, SVCB notation?
 
 # Change Log
 
