@@ -14,7 +14,7 @@ v: 3
 # workgroup: Internet Engineering Task Force
 keyword:
  - catalog zone
- - zonefile bootstrap
+ - zone file bootstrap
  - primary server
 #venue:
 #  github: karldyson/draft-dyson-primary-zonefile-bootstrap
@@ -37,12 +37,14 @@ normative:
   RFC9432:
   RFC2136:
   RFC2119:
+  RFC1035:
+  RFC3596:
 
 informative:
 
 --- abstract
 
-This document specifies an update to {{RFC9432}} such that the primary DNS server for a zone can bootstrap the underlying zonefile using information contained within a catalog zone.
+This document specifies an update to {{RFC9432}} such that the primary DNS server for a zone can bootstrap the underlying zone file using information contained within a catalog zone.
 
 
 --- middle
@@ -55,13 +57,13 @@ However there is no standards compliant method of bootstrapping the presence of 
 
 There are vendor specific methods, such as RNDC for ISC BIND, which can be used remotely, but which still requires you to have created the underlying zone file on the primary server filesystem.
 
-PowerDNS has a proprietary API that can be used, and other products likewise have mechanisms.
+PowerDNS has a proprietary API that can be used, and other products likewise have proprietary mechanisms.
 
 However, there's no standards compliant vendor independent mechanism of signalling to the primary server that a new zone file is to be created.
 
 Operators of large scale DNS systems may want to be able to signal the creation of a new zone without wanting to be tied to a particular vendor's proprietary software, and without the need or overhead of engineering a bespoke solution with the ongoing need to support and maintain that.
 
-It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and will want to distribute the zones to their secondary servers via DNS Catalog Zones {{RFC9432}}.
+Having dynamically provisioned a new zone on the primary server, the operator may then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and may also want to distribute the zones to their secondary servers via DNS Catalog Zones {{RFC9432}}.
 
 The scope of this document is therefore confined to the initial bootstrap provisioning of the zone file, and MAY include signalling of initial DNSSEC policy or configuration (see {{dnssecConsideration}}).
 
@@ -71,74 +73,123 @@ Broader provisioning of the base nameserver configuration is beyond the scope of
 
 {::boilerplate bcp14-tagged}
 
-This document doesn't alter the conventions and definitions as defined in {{RFC9432}} DNS Catalog Zones.
+The following is in addition to the conventions and definitions as defined in {{RFC9432}} DNS Catalog Zones.
+
+Within DNS servers, specifically when transferring zones to other servers, there is the concept of a primary server and a secondary server in each transfer relationship.
+
+Each secondary server will be transferring the zone from a configured upstream primary server, which may, itself, actually be a secondary server to a further upstream primary server, and so on.
+
+However, within this document, the term "primary server" is used specifically to mean the ultimate upstream primary server, where the resource records that form the zone's content are maintained, and thus, that server does not transfer the zone from another server.
 
 # Catalog Properties
 
-## Zonefile Bootstrap (boot property)
+If bootstrapping of the underlying zone file is not required or is disabled in the implementation configuration, then the various boot properties defined in this document MAY be absent, and in that context, their absence DOES NOT constitute a broken catalog zone.
 
-When suitable configuration is activated in the implementation, and a new member zone entry is added to the catalog being served by the primary, the primary should create the underlying zonefile with the properties and parameters outlined in the boot property.
+If the bootstrapping of the underlying zone file is enabled, and the properties and parameters defined below constitute a broken configuration as defined in this document, then the catalog MUST NOT be processed (Section 5.1 {{RFC9432}}).
+
+## Zone File Bootstrap (boot property)
+
+When suitable configuration is activated in the implementation, and a new member zone entry is added to the catalog being served by the primary server, the primary server should create the underlying zone file with the properties and parameters outlined in the boot property.
 
 The boot property is the parent label to the other labels that facilitate the adding of the various properties and parameters.
 
-The implementation MAY permit the following on a global, or per catalog basis, by way of suitable configuration parameters:
+The implementation may permit the following on a global, or per catalog basis, by way of suitable configuration parameters:
 
-  * The zone file is ONLY created if the zonefile does not already exist
+  * The zone file is ONLY created if the zone file does not already exist
   * The zone file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server)
   * The zone file is ALWAYS created, overwriting any existing zone file
 
+The second of the above options is noteworthy, as this mechanism may be used for the bootstrapping of a downstream signer configuration without necessarily being used to signal the bootstrapping of the zone file itself on the primary server.
+
+A number of sub-properties, expressed as labels within the bailiwick of the "boot" label, define the bootstrap parameters.
+
 ## Start Of Authority (soa property)
 
-The soa property is used to specify the SOA that will be applied to the created zonefile for the member zone.
+The soa property is used to specify the SOA that will be applied to the created zone file for the member zone.
 
-Clearly an actual SOA record type cannot be used here, and so the parameters to be applied shall be constructed in a TXT record type as follows:
+There MUST be one and ONLY one soa property record with the exception that a member zone record can be specified to override the default (see {{memberZoneSection}} below).
+
+Multiple soa property records within a given scope constitutes a broken catalog zone.
+
+Absence of a soa property similarly constitues a broken catalog zone.
+
+### Parameters
+
+With the exception of the serial number, the SOA record parameters are supplied as key=value pairs in the RDATA of a TXT resource record, with the pairs separated by whitespace.
+
+The keys are as per the field names expected in a SOA record as defined in Section 3.3.13 of {{RFC1035}}.
+
+### Example
 
 ~~~~
-soa.boot.$CATZ 0 IN TXT ( "mname=<mname>; rname=<rname>; "
-      "refresh=<refresh>; retry=<retry>; expire=<expire>; "
+soa.boot.$CATZ 0 IN TXT ( "mname=<mname> rname=<rname> "
+      "refresh=<refresh> retry=<retry> expire=<expire> "
       "minimum=<minimum>" )
 ~~~~
-
-There MUST NOT be more than a single soa property record with the exception that a member zone record can be specified to override the default (see {{memberZoneSection}} below).
-
-Multiple soa property records constitues a broken catalog zone, which MUST NOT be processed (see {{RFC9432}} section 5.1).
-
 
 ## Nameservers (ns property)
 
 Actual NS records cannot be used, as we do not want to actually delegate outside of this catalog zone.
 
-The nameservers will be specified in a TXT record as follows, along with the associated IP addresses, if appropriate or required.
+The nameserver parameters are supplied as key=value pairs in the RDATA of a TXT resource record, with the pairs separated by whitespace.
 
-Specifying the nameserver IP addresses is OPTIONAL, with the exception that if the zone that the nameservers reside in is to be created within the catalog, then they MUST be specified in order that the relevant records can be created in the zone at zone bootstrap time.
+If the nameservers are in-bailiwick and address records are therefore required, suitable address records MUST be created in the member zone file from the parameters specified.
 
-If the nameservers are in-bailiwick and address records are therefore required, suitable address records MUST be created in the member zone file from the entries specified.
+If the nameservers are in-bailiwick of a zone in the catalog, and an address is not specified, this would result in a zone that won't load; This denotes a broken catalog zone.
 
-If the nameservers are in-bailiwick of a zone in the catalog, and an address is not specified, this denotes a broken catalog zone, which MUST NOT be processed.
+There MUST be at least one ns entry that can be applied to a member zone, either specified directly as per {{memberZoneSection}} or in the catalog section to be inherited.
+
+Therefore, catalog zone that contains no nameserver entries constitutes a broken catalog zone.
 
 The ns property can be specified multiple times, with one nameserver specified per entry.
 
+### name Parameter
+
+The "name" parameter MUST be present, and contains the name of the nameserver as it should appear in the zone file. To avoid ambiguity in behaviour, this SHOULD be a fully qualified and dot-terminated name.
+
+The value of the "name" parameter MUST be compliant with Section 3.3.11 of {{RFC1035}}.
+
+A ns property record that does not contain a "name" parameter consistutes a broken catalog zone.
+
+### ipv4 and ipv6 Parameters
+
+The "ipv4" and "ipv6" parameters are OPTIONAL. They contain the IP address(es) of the hostname specified in the "name" parameter.
+
+If the value in the "name" parameter is in-bailwick, and hence requires that the relevant address enties are also created in the zone, at least one of either the "ipv4" or "ipv6" parameters MUST be specified.
+
+The value of the "ipv4" parameter, if present, MUST be a valid IPv4 address, compliant with Section 3.4.1 of {{RFC1035}}.
+
+The value of the "ipv6" parameter, if present, MUST be a valid IPv6 address, compliant with Section 2.1 of {{RFC3596}}.
+
+A ns property record that contains an in-bailiwick name, but does not contain at least one address parameter constitutes a broken catalog zone. 
+
+### Example
+
 ~~~~
-ns.boot.$CATZ 0 IN TXT ( "ns=some.name.server.; "
-      "ipv4=192.0.2.1; ipv6=2001:db8::1" )
+ns.boot.$CATZ 0 IN TXT ( "name=some.name.server. "
+      "ipv4=192.0.2.1 ipv6=2001:db8::1" )
+ns.boot.$CATZ 0 IN TXT ( "name=another.name.server. "
+      "ipv4=192.0.2.129 ipv6=2001:db8:44::1" )
 ~~~~
 
+## DNSSEC (dnssec Property)
+
+Placeholder for definition of how to signal to a signer that we wish to bootstrap keys and sign the newly created zone...
 
 # Member Zone Properties {#memberZoneSection}
 
 The default properties outlined above can be overridden on a per member zone basis. Where per member zone entries are specified in the catalog, they MUST be used in preference to the default properties specified at the catalog level.
 
-A subset MAY be specified here; for example, the SOA could be omitted here and just the NS records or DNSSEC parameters specified, with the omitted properties taken from the catalog level values.
+A subset MAY be specified here; for example, the SOA could be omitted here and just the NS records or DNSSEC parameters specified, with the omitted properties inherited from the catalog level values.
 
 ~~~~
 <unique-N>.zones.$CATZ 0 IN PTR example.com.
-soa.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "mname=<mname>; "
-      "rname=<rname>; refresh=<refresh>; retry=<retry>; "
-      "expire:<expire>; minimum:<minimum>" )
-ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "ns=some.name.server.; "
-      "ipv4=192.0.2.1; ipv6=2001:db8::1" )
+soa.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "mname=<mname> "
+      "rname=<rname> refresh=<refresh> retry=<retry> "
+      "expire=<expire> minimum=<minimum>" )
+ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "name=some.name.server. "
+      "ipv4=192.0.2.1 ipv6=2001:db8::1" )
 ~~~~
-
 
 # Name Server Behaviour
 
@@ -149,7 +200,6 @@ The parameters specified in the boot property will contain hostnames, for exampl
 # Security Considerations
 
 This document does not alter the security considerations outlined in {{RFC9432}}
-
 
 # IANA Considerations {#IANA}
 
@@ -163,10 +213,10 @@ Reference: this document
 | boot            | Bootstrap          | Standards Track | this document |
 | soa             | Start Of Authority | Standards Track | this document |
 | ns              | Name Server        | Standards Track | this document |
+| dnssec          | DNSSEC             | Standards Track | this document |
 {:title="DNS Catalog Zones Properies Registry"}
 
 Field meanings are unchanged from {{RFC9432}}
-
 
 --- back
 
@@ -183,18 +233,18 @@ The default nameservers are in-bailiwick of example.com, which is in the catalog
 ~~~~
 catz.invalid. 0 SOA invalid. invalid. 1 3600 600 2419200 3600
 catz.invalid. 0 NS invalid.
-soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com.; "
-      "rname=hostmaster.example.com.; refresh=14400; "
-      "retry=900; expire=2419200; minimum=3600" )
-ns.boot.catz.invalid. 0 TXT ( "ns=ns1.example.com. ipv4=192.0.2.1 "
+soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com. "
+      "rname=hostmaster.example.com. refresh=14400 "
+      "retry=900 expire=2419200 minimum=3600" )
+ns.boot.catz.invalid. 0 TXT ( "name=ns1.example.com. ipv4=192.0.2.1 "
       "ipv6=2001:db8::1" )
-ns.boot.catz.invalid. 0 TXT ( "ns=ns2.example.com. ipv4=192.0.2.2 "
+ns.boot.catz.invalid. 0 TXT ( "name=ns2.example.com. ipv4=192.0.2.2 "
       "ipv6=2001:db8::2" )
 kahdkh6f.zones.catz.invalid. 0 PTR example.com.
 hajhsjha.zones.catz.invalid. 0 PTR example.net.
-ns.hajhsjha.zones.catz.invalid. 0 TXT "ns=ns.example.org"
-ns.hajhsjha.zones.catz.invalid. 0 TXT ( "ns=ns.example.net"
-      "ipv4=192.0.2.250; ipv6=2001:db8:ff::149" )
+ns.hajhsjha.zones.catz.invalid. 0 TXT "name=ns.example.org"
+ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
+      "ipv4=192.0.2.250 ipv6=2001:db8:ff::149" )
 ~~~~
 
 # Author Notes/Thoughts
@@ -212,6 +262,8 @@ It does feel a little bit like it muddies the waters between zone distribution a
 1. An API for *just* zone bootstrapping feels like a big thing that would likely not get implemented, and would likely be a part of a wider implementation's general nameserver configuration and operations API, which is waaaaay beyond the scope of this document/standardisation
 
 It may be considered that this is "nameserver configuration", however, it has strong parallels in this regard to the "configuration" on secondary servers, including such considerations as to which entities are allowed to notify and/or transfer the zone, as are conveyed to those secondary servers in {{RFC9432}} DNS Catalog Zones. Indeed, much of the same configuration may be needed by or shared with the primary server for those same zones.
+
+Implementing via an extension of catalog zones feels like it closes the gap in the end-to-end ecosystem whereby catalog zones + dynamic updates gives an end-to-end approach to the creation of a zone, its underlying file, distribution of that zone to secondary servers, and the ongoing manipulation of records in the zone.
 
 TODO - add more detail explaining the above, reasoning, etc...?
 
@@ -235,9 +287,9 @@ Consideration was given as to whether things like SOA parameters should be indiv
 
 Should we permit the property to be made up of multiple TXT records so long as a given parameter is not repeated?
 
-Should we specify an soa serial format? or an initial soa serial value...?
+Should we specify an soa serial format? or an initial soa serial value...? If not, should we specify in the text, or leave it to the implemention, which may have a default, such as BIND's "serial-update-method"
 
-Given that it's pretty much expected that the operator is going to start making changes to the zone via dynamic updates, it'd be reasonable to expect them to be able to set those parameters. Which does beg the question, do we need to specify soa and nameserver values at all, or just specify that the zonefile is or is not to be created, and fill some template default values with the expectation that the operator would immediatly overwrite them with "correct" values...?
+Given that it's pretty much expected that the operator is going to start making changes to the zone via dynamic updates, it'd be reasonable to expect them to be able to set those parameters. Which does beg the question, do we need to specify soa and nameserver values at all, or just specify that the zone file is or is not to be created, and fill some template default values with the expectation that the operator would immediatly overwrite them with "correct" values...?
 
 ### ns Property
 
