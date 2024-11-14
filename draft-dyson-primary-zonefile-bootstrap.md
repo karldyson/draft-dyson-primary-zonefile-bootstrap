@@ -161,7 +161,7 @@ The value of the "ipv4" parameter, if present, MUST be a valid IPv4 address, com
 
 The value of the "ipv6" parameter, if present, MUST be a valid IPv6 address, compliant with Section 2.1 of {{RFC3596}}.
 
-A ns property record that contains an in-bailiwick name, but does not contain at least one address parameter constitutes a broken catalog zone. 
+A ns property record that contains an in-bailiwick name, but does not contain at least one address parameter constitutes a broken catalog zone.
 
 ### Example
 
