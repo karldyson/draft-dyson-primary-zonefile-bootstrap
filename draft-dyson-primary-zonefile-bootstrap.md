@@ -63,7 +63,7 @@ Operators of large scale DNS systems may want to be able to signal the creation 
 
 It is anticipated that the reason for desiring the ability to dynamically provision a zone on the primary server is because the operator will then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and will want to distribute the zones to their secondary servers via DNS Catalog Zones {{RFC9432}}.
 
-The scope of this document is therefore confined to the initial bootstrap provisioning of the zone file, and MAY include signalling of initial DNSSEC policy or configuration (see {dnssecConsideration}).
+The scope of this document is therefore confined to the initial bootstrap provisioning of the zone file, and MAY include signalling of initial DNSSEC policy or configuration (see {{dnssecConsideration}}).
 
 Broader provisioning of the base nameserver configuration is beyond the scope of this discussion and document.
 
@@ -223,7 +223,7 @@ It seems that it'd be useful to signal initial policy/settings for DNSSEC in a s
 
 ### General
 
-Should the properties be listed in the registry as soa.boot and ns.boot, given boot itself is a placeholder label, and doesn't (currently?) take any parameters or records of its own?
+Should the properties be listed in the registry as "soa.boot" and "ns.boot", given "boot" itself is a placeholder label, and doesn't (currently?) take any parameters or records of its own?
 
 ### coo Property
 
