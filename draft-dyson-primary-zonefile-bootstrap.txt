@@ -120,8 +120,7 @@ Table of Contents
 
    The scope of this document is therefore confined to the initial
    bootstrap provisioning of the zone file, and MAY include signalling
-   of initial DNSSEC policy or configuration (see
-   {dnssecConsideration}).
+   of initial DNSSEC policy or configuration (see Appendix B.2).
 
    Broader provisioning of the base nameserver configuration is beyond
    the scope of this discussion and document.
@@ -362,8 +361,8 @@ B.3.   Properties
 
 B.3.1.   General
 
-   Should the properties be listed in the registry as soa.boot and
-   ns.boot, given boot itself is a placeholder label, and doesn't
+   Should the properties be listed in the registry as "soa.boot" and
+   "ns.boot", given "boot" itself is a placeholder label, and doesn't
    (currently?) take any parameters or records of its own?
 
 B.3.2.  coo Property
