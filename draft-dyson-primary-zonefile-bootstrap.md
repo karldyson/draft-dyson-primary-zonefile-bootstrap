@@ -64,7 +64,7 @@ Operators of large scale DNS systems may want to be able to signal the creation 
 
 Having dynamically provisioned a new zone on the primary server, the operator may then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and may also want to distribute the zones to secondary servers via DNS Catalog Zones {{RFC9432}}.
 
-The scope of this document is therefore confined to the initial bootstrap provisioning of the master file, and MAY include signalling of initial DNSSEC policy or configuration (see {{dnssecConsideration}}).
+The scope of this document is therefore confined to the initial bootstrap provisioning of the master file, and optional signalling of initial DNSSEC policy or configuration (see {{dnssecConsideration}}).
 
 Broader provisioning of the base nameserver configuration is beyond the scope of this document.
 
@@ -82,6 +82,8 @@ However, within this document, the term "primary server" is used specifically to
 
 The term "master file" is as per the description in Section 5 of {{RFC1035}}.
 
+The use of parenthesis in the examples as as described in Section 5.1 of {{RFC1035}}.
+
 # Catalog Properties
 
 If bootstrapping of the underlying master file for the member zone is not required or is disabled in the implementation configuration, then the various boot properties defined in this document MAY be absent, and in that context, their absence DOES NOT constitute a broken catalog zone.
@@ -97,10 +99,10 @@ The boot property is the parent label to the other labels that facilitate the ad
 The implementation may permit the following on a global, or per catalog basis, by way of suitable configuration parameters:
 
   * The master file is ONLY created for the zone if the master file does not already exist
-  * The master file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server)
+  * The master file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server, and the master file would be expected to exist as is the case before this document).
   * The master file is ALWAYS created, overwriting any existing master file for the zone
 
-The second of the above options is noteworthy, as this mechanism may be used for the bootstrapping of a downstream signer configuration without necessarily being used to signal the bootstrapping of the zone file itself on the primary server.
+The second of the above options can facilitate the bootstrapping of a downstream signer configuration without necessarily being used to signal the initial bootstrap state of the zone's master file on the primary server.
 
 A number of sub-properties, expressed as labels within the bailiwick of the "boot" label, define the bootstrap parameters.
 
