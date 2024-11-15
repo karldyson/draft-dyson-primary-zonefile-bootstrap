@@ -195,7 +195,7 @@ ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "name=some.name.server. "
 
 There is no change to the coo property; if the member zone changes ownership to another catalog, fundamentally, the zone already exists.
 
-The scope of this document is solely concerned with the initial bootstrapping of the zone's file, and so in the case of the zone changing ownership, the bootstrap parameters MUST NOT be processed. 
+The scope of this document is solely concerned with the initial bootstrapping of the zone's file, and so in the case of the zone changing ownership, the bootstrap parameters MUST NOT be processed.
 
 # Name Server Behaviour
 
