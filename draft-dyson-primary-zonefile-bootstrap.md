@@ -262,8 +262,8 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns1.example.net "
 ## example.com Master File Example
 
 ~~~~
-example.com. 3600 SOA ns1.example.com. hostmaster.example.com. (
-                      1 14400 900 2419200 3600 )
+example.com.     3600 SOA ns1.example.com. hostmaster.example.com. (
+                           1 14400 900 2419200 3600 )
 example.com.     3600 NS   ns1.example.com.
 example.com.     3600 NS   ns2.example.com.
 ns1.example.com. 3600 A    192.0.2.1
@@ -275,8 +275,8 @@ ns2.example.com. 3600 AAAA 2001:db8::2
 ## example.net Master File Example
 
 ~~~~
-example.net. 3600 SOA ns1.example.com. hostmaster.example.com. (
-                      1 14400 900 2419200 3600 )
+example.net.     3600 SOA ns1.example.com. hostmaster.example.com. (
+                            1 14400 900 2419200 3600 )
 example.net.     3600 NS   ns1.example.com.
 example.net.     3600 NS   ns1.example.net.
 ns1.example.net. 3600 A    192.0.2.250
@@ -313,7 +313,7 @@ It seems that it'd be useful to signal initial policy/settings for DNSSEC in a s
 
 Should the properties be listed in the registry as "soa.boot" and "ns.boot", given "boot" itself is a placeholder label, and doesn't (currently?) take any parameters or records of its own?
 
-TODO: Do we need to signal the initial TTL of the records being added (SOA, NS, A, AAAA)... I think so...
+TODO: Do we need to signal the initial TTL of the records being added (SOA, NS, A, AAAA)... I think so... Could specifiy with an extra key=value pair, or could leave it to pick up from the SOA
 
 ### coo Property
 
