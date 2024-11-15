@@ -44,60 +44,61 @@ informative:
 
 --- abstract
 
-This document specifies an update to {{RFC9432}} such that the primary DNS server for a zone can bootstrap the underlying zone file using information contained within a catalog zone.
-
+This document describes an update to {{RFC9432}} that facilitates a method for the primary DNS server of a zone to create the underlying master file(s) for member zone(s) using information contained within the catalog zone.
 
 --- middle
 
 # Introduction
 
-Once a DNS zone file exists, there are standards compliant ways to distribute that zone to secondary servers in {{RFC9432}} DNS Catalog Zones, as well as standards compliant ways to alter the contents of the zone in {{RFC2136}} Dynamic Updates.
+Once a DNS zone's master file exists, there are standards compliant ways to distribute that zone to secondary servers in {{RFC9432}} DNS Catalog Zones, as well as standards compliant ways to alter the contents of the zone in {{RFC2136}} Dynamic Updates.
 
-However there is no standards compliant method of bootstrapping the presence of a new empty zone file ready for those two processes to work with.
+However there is no standards compliant method of bootstrapping the presence of a new empty master file for the zone, ready for those two processes to work with.
 
-There are vendor specific methods, such as RNDC for ISC BIND, which can be used remotely, but which still requires you to have created the underlying zone file on the primary server filesystem.
+There are vendor specific methods, such as RNDC for ISC BIND, which can be used remotely, but which still requires you to have created the underlying master file for the zone on the primary server filesystem.
 
 PowerDNS has a proprietary API that can be used, and other products likewise have proprietary mechanisms.
 
-However, there's no standards compliant vendor independent mechanism of signalling to the primary server that a new zone file is to be created.
+However, there's no standards compliant vendor independent mechanism of signalling to the primary server that a new master file is to be created for the zone.
 
-Operators of large scale DNS systems may want to be able to signal the creation of a new zone without wanting to be tied to a particular vendor's proprietary software, and without the need or overhead of engineering a bespoke solution with the ongoing need to support and maintain that.
+Operators of large scale DNS systems may want to be able to signal the creation of a new master file for a new zone without wanting to be tied to a particular vendor's proprietary software, and without the need or overhead of engineering a bespoke solution with the ongoing need to support and maintain that.
 
-Having dynamically provisioned a new zone on the primary server, the operator may then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and may also want to distribute the zones to their secondary servers via DNS Catalog Zones {{RFC9432}}.
+Having dynamically provisioned a new zone on the primary server, the operator may then manage resource records in the zone via Dynamic Updates {{RFC2136}}, and may also want to distribute the zones to secondary servers via DNS Catalog Zones {{RFC9432}}.
 
-The scope of this document is therefore confined to the initial bootstrap provisioning of the zone file, and MAY include signalling of initial DNSSEC policy or configuration (see {{dnssecConsideration}}).
+The scope of this document is therefore confined to the initial bootstrap provisioning of the master file, and MAY include signalling of initial DNSSEC policy or configuration (see {{dnssecConsideration}}).
 
-Broader provisioning of the base nameserver configuration is beyond the scope of this discussion and document.
+Broader provisioning of the base nameserver configuration is beyond the scope of this document.
 
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
-The following is in addition to the conventions and definitions as defined in {{RFC9432}} DNS Catalog Zones.
+The following is in addition to the conventions and definitions as defined in {{RFC9432}}.
 
 Within DNS servers, specifically when transferring zones to other servers, there is the concept of a primary server and a secondary server in each transfer relationship.
 
 Each secondary server will be transferring the zone from a configured upstream primary server, which may, itself, actually be a secondary server to a further upstream primary server, and so on.
 
-However, within this document, the term "primary server" is used specifically to mean the ultimate upstream primary server, where the resource records that form the zone's content are maintained, and thus, that server does not transfer the zone from another server.
+However, within this document, the term "primary server" is used specifically to mean the ultimate upstream primary server, where the resource records that form the zone's content are maintained in the master file, and thus, that server does not transfer the zone from another server.
+
+The term "master file" is as per the description in Section 5 of {{RFC1035}}.
 
 # Catalog Properties
 
-If bootstrapping of the underlying zone file is not required or is disabled in the implementation configuration, then the various boot properties defined in this document MAY be absent, and in that context, their absence DOES NOT constitute a broken catalog zone.
+If bootstrapping of the underlying master file for the member zone is not required or is disabled in the implementation configuration, then the various boot properties defined in this document MAY be absent, and in that context, their absence DOES NOT constitute a broken catalog zone.
 
-If the bootstrapping of the underlying zone file is enabled, and the properties and parameters defined below constitute a broken configuration as defined in this document, then the catalog MUST NOT be processed (Section 5.1 {{RFC9432}}).
+However, if the bootstrapping of the underlying master file for the member zone is enabled, and the properties and parameters defined below constitute a broken configuration as defined in this document, then the catalog is broken, and MUST NOT be processed (Section 5.1 {{RFC9432}}).
 
 ## Zone File Bootstrap (boot property)
 
-When suitable configuration is activated in the implementation, and a new member zone entry is added to the catalog being served by the primary server, the primary server should create the underlying zone file with the properties and parameters outlined in the boot property.
+When suitable configuration is activated in the implementation, and a new member zone entry is added to the catalog being served by the primary server, the primary server should create the underlying master file for the zone with the properties and parameters outlined in the boot property.
 
 The boot property is the parent label to the other labels that facilitate the adding of the various properties and parameters.
 
 The implementation may permit the following on a global, or per catalog basis, by way of suitable configuration parameters:
 
-  * The zone file is ONLY created if the zone file does not already exist
-  * The zone file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server)
-  * The zone file is ALWAYS created, overwriting any existing zone file
+  * The master file is ONLY created for the zone if the master file does not already exist
+  * The master file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server)
+  * The master file is ALWAYS created, overwriting any existing master file for the zone
 
 The second of the above options is noteworthy, as this mechanism may be used for the bootstrapping of a downstream signer configuration without necessarily being used to signal the bootstrapping of the zone file itself on the primary server.
 
@@ -133,7 +134,7 @@ Actual NS records cannot be used, as we do not want to actually delegate outside
 
 The nameserver parameters are supplied as key=value pairs in the RDATA of a TXT resource record, with the pairs separated by whitespace.
 
-If the nameservers are in-bailiwick and address records are therefore required, suitable address records MUST be created in the member zone file from the parameters specified.
+If the nameservers are in-bailiwick and address records are therefore required, suitable address records MUST be created in the member zone's master file from the parameters specified.
 
 If the nameservers are in-bailiwick of a zone in the catalog, and an address is not specified, this would result in a zone that won't load; This denotes a broken catalog zone.
 
@@ -145,7 +146,7 @@ The ns property can be specified multiple times, with one nameserver specified p
 
 ### name Parameter
 
-The "name" parameter MUST be present, and contains the name of the nameserver as it should appear in the zone file. To avoid ambiguity in behaviour, this SHOULD be a fully qualified and dot-terminated name.
+The "name" parameter MUST be present, and contains the name of the nameserver as it should appear in the zone's master file. To avoid ambiguity in behaviour, this SHOULD be a fully qualified and dot-terminated name.
 
 The value of the "name" parameter MUST be compliant with Section 3.3.11 of {{RFC1035}}.
 
@@ -193,19 +194,19 @@ ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "name=some.name.server. "
 
 ## Change Of Ownership (coo Property)
 
-There is no change to the coo property; if the member zone changes ownership to another catalog, fundamentally, the zone already exists.
+There is no change to the coo property; if the member zone changes ownership to another catalog, fundamentally, the zone's master file already exists.
 
-The scope of this document is solely concerned with the initial bootstrapping of the zone's file, and so in the case of the zone changing ownership, the bootstrap parameters MUST NOT be processed.
+The scope of this document is solely concerned with the initial bootstrapping of the zone's master file, and so in the case of the zone changing ownership, the bootstrap parameters MUST NOT be processed.
 
 # Name Server Behaviour
 
 ## General Behaviour
 
-The parameters specified in the boot property will contain hostnames, for example in the NS records and in the SOA; these will be replicated verbatim into the zone upon creation, and so it should be noted that if they would be fully qualified in a manually created zone file, they MUST be fully quallified in the parameter specification in the property.
+The parameters specified in the boot property will contain hostnames, for example in the NS records and in the SOA; these will be replicated verbatim into the zone upon creation, and so it should be noted that if they would be fully qualified in a manually created master file for the zone, they MUST be fully quallified in the parameter specification in the property.
 
 # Security Considerations
 
-This document does not alter the security considerations outlined in {{RFC9432}}
+This document does not alter the security considerations outlined in {{RFC9432}}.
 
 # IANA Considerations {#IANA}
 
@@ -222,13 +223,13 @@ Reference: this document
 | dnssec          | DNSSEC             | Standards Track | this document |
 {:title="DNS Catalog Zones Properies Registry"}
 
-Field meanings are unchanged from {{RFC9432}}
+Field meanings are unchanged from {{RFC9432}}.
 
 --- back
 
 # Catalog Zone Example
 
-The following is an example showing the additional properties and parameters as outlined in this document.
+The following is an example catalog zone showing the additional properties and parameters as outlined in this document.
 
 There are defaults specified for the SOA and NS records, which would be used by the example.com. zone.
 
@@ -265,11 +266,11 @@ It does feel a little bit like it muddies the waters between zone distribution a
 
 1. In a catalog zone scenario, the catalog equally feels like the place for zone related parameters
 1. It feels less like Dynamic Updates would be the right place for it, for example.
-1. An API for *just* zone bootstrapping feels like a big thing that would likely not get implemented, and would likely be a part of a wider implementation's general nameserver configuration and operations API, which is waaaaay beyond the scope of this document/standardisation
+1. An API for *just* zone bootstrapping feels like a big thing that would likely be overkill, and probably not get implemented, and would likely be a part of a wider implementation's general nameserver configuration and operations API, which is waaaaay beyond the scope of this document, and possibly beyond standardisation.
 
 It may be considered that this is "nameserver configuration", however, it has strong parallels in this regard to the "configuration" on secondary servers, including such considerations as to which entities are allowed to notify and/or transfer the zone, as are conveyed to those secondary servers in {{RFC9432}} DNS Catalog Zones. Indeed, much of the same configuration may be needed by or shared with the primary server for those same zones.
 
-Implementing via an extension of catalog zones feels like it closes the gap in the end-to-end ecosystem whereby catalog zones + dynamic updates gives an end-to-end approach to the creation of a zone, its underlying file, distribution of that zone to secondary servers, and the ongoing manipulation of records in the zone.
+Implementing via an extension of catalog zones feels like it closes the gap in the end-to-end ecosystem whereby catalog zones + dynamic updates gives an end-to-end approach to the creation of a zone, its underlying master file, distribution of that zone to secondary servers, and the ongoing manipulation of records in the zone.
 
 TODO - add more detail explaining the above, reasoning, etc...?
 
