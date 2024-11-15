@@ -23,7 +23,7 @@ Discussion Venues
    This note is to be removed before publishing as an RFC.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/karldyson/draft-dyson-zone-primary-bootstrap.
+   https://github.com/karldyson/draft-dyson-primary-zonefile-bootstrap.
 
 Status of This Memo
 
