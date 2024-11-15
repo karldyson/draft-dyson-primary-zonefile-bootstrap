@@ -1303,7 +1303,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <p id="section-1-5">However, there's no standards compliant vendor independent mechanism of signalling to the primary server that a new master file is to be created for the zone.<a href="#section-1-5" class="pilcrow">¶</a></p>
 <p id="section-1-6">Operators of large scale DNS systems may want to be able to signal the creation of a new master file for a new zone without wanting to be tied to a particular vendor's proprietary software, and without the need or overhead of engineering a bespoke solution with the ongoing need to support and maintain that.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1-7">Having dynamically provisioned a new zone on the primary server, the operator may then manage resource records in the zone via Dynamic Updates <span>[<a href="#RFC2136" class="cite xref">RFC2136</a>]</span>, and may also want to distribute the zones to secondary servers via DNS Catalog Zones <span>[<a href="#RFC9432" class="cite xref">RFC9432</a>]</span>.<a href="#section-1-7" class="pilcrow">¶</a></p>
-<p id="section-1-8">The scope of this document is therefore confined to the initial bootstrap provisioning of the master file, and <span class="bcp14">MAY</span> include signalling of initial DNSSEC policy or configuration (see <a href="#dnssecConsideration" class="auto internal xref">Appendix B.2</a>).<a href="#section-1-8" class="pilcrow">¶</a></p>
+<p id="section-1-8">The scope of this document is therefore confined to the initial bootstrap provisioning of the master file, and optional signalling of initial DNSSEC policy or configuration (see <a href="#dnssecConsideration" class="auto internal xref">Appendix B.2</a>).<a href="#section-1-8" class="pilcrow">¶</a></p>
 <p id="section-1-9">Broader provisioning of the base nameserver configuration is beyond the scope of this document.<a href="#section-1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1321,6 +1321,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-2-4">Each secondary server will be transferring the zone from a configured upstream primary server, which may, itself, actually be a secondary server to a further upstream primary server, and so on.<a href="#section-2-4" class="pilcrow">¶</a></p>
 <p id="section-2-5">However, within this document, the term "primary server" is used specifically to mean the ultimate upstream primary server, where the resource records that form the zone's content are maintained in the master file, and thus, that server does not transfer the zone from another server.<a href="#section-2-5" class="pilcrow">¶</a></p>
 <p id="section-2-6">The term "master file" is as per the description in Section 5 of <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>.<a href="#section-2-6" class="pilcrow">¶</a></p>
+<p id="section-2-7">The use of parenthesis in the examples as as described in Section 5.1 of <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>.<a href="#section-2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="catalog-properties">
@@ -1343,13 +1344,13 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             <p id="section-3.1-4.1.1">The master file is ONLY created for the zone if the master file does not already exist<a href="#section-3.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-4.2">
-            <p id="section-3.1-4.2.1">The master file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server)<a href="#section-3.1-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-4.2.1">The master file is NEVER created (effectively, the bootstrap capability is disabled for this catalog or primary server, and the master file would be expected to exist as is the case before this document).<a href="#section-3.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-4.3">
             <p id="section-3.1-4.3.1">The master file is ALWAYS created, overwriting any existing master file for the zone<a href="#section-3.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.1-5">The second of the above options is noteworthy, as this mechanism may be used for the bootstrapping of a downstream signer configuration without necessarily being used to signal the bootstrapping of the zone file itself on the primary server.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.1-5">The second of the above options can facilitate the bootstrapping of a downstream signer configuration without necessarily being used to signal the initial bootstrap state of the zone's master file on the primary server.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
 <p id="section-3.1-6">A number of sub-properties, expressed as labels within the bailiwick of the "boot" label, define the bootstrap parameters.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>

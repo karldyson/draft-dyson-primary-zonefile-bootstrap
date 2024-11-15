@@ -127,8 +127,8 @@ Table of Contents
    secondary servers via DNS Catalog Zones [RFC9432].
 
    The scope of this document is therefore confined to the initial
-   bootstrap provisioning of the master file, and MAY include signalling
-   of initial DNSSEC policy or configuration (see Appendix B.2).
+   bootstrap provisioning of the master file, and optional signalling of
+   initial DNSSEC policy or configuration (see Appendix B.2).
 
    Broader provisioning of the base nameserver configuration is beyond
    the scope of this document.
@@ -160,6 +160,9 @@ Table of Contents
 
    The term "master file" is as per the description in Section 5 of
    [RFC1035].
+
+   The use of parenthesis in the examples as as described in Section 5.1
+   of [RFC1035].
 
 3.  Catalog Properties
 
@@ -193,15 +196,17 @@ Table of Contents
       does not already exist
 
    *  The master file is NEVER created (effectively, the bootstrap
-      capability is disabled for this catalog or primary server)
+      capability is disabled for this catalog or primary server, and the
+      master file would be expected to exist as is the case before this
+      document).
 
    *  The master file is ALWAYS created, overwriting any existing master
       file for the zone
 
-   The second of the above options is noteworthy, as this mechanism may
-   be used for the bootstrapping of a downstream signer configuration
-   without necessarily being used to signal the bootstrapping of the
-   zone file itself on the primary server.
+   The second of the above options can facilitate the bootstrapping of a
+   downstream signer configuration without necessarily being used to
+   signal the initial bootstrap state of the zone's master file on the
+   primary server.
 
    A number of sub-properties, expressed as labels within the bailiwick
    of the "boot" label, define the bootstrap parameters.
