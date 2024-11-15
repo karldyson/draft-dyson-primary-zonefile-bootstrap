@@ -125,7 +125,7 @@ The keys are as per the field names expected in a SOA record as defined in Secti
 ### Example
 
 ~~~~
-soa.boot.$CATZ 0 IN TXT ( "mname=<mname> rname=<rname> "
+soa.boot.$CATZ 0 TXT ( "mname=<mname> rname=<rname> "
       "refresh=<refresh> retry=<retry> expire=<expire> "
       "minimum=<minimum>" )
 ~~~~
@@ -169,9 +169,9 @@ A ns property record that contains an in-bailiwick name, but does not contain at
 ### Example
 
 ~~~~
-ns.boot.$CATZ 0 IN TXT ( "name=some.name.server. "
+ns.boot.$CATZ 0 TXT ( "name=some.name.server. "
       "ipv4=192.0.2.1 ipv6=2001:db8::1" )
-ns.boot.$CATZ 0 IN TXT ( "name=another.name.server. "
+ns.boot.$CATZ 0 TXT ( "name=another.name.server. "
       "ipv4=192.0.2.129 ipv6=2001:db8:44::1" )
 ~~~~
 
@@ -186,11 +186,11 @@ The default properties outlined above can be overridden on a per member zone bas
 A subset MAY be specified here; for example, the SOA could be omitted here and just the NS records or DNSSEC parameters specified, with the omitted properties inherited from the catalog level values.
 
 ~~~~
-<unique-N>.zones.$CATZ 0 IN PTR example.com.
-soa.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "mname=<mname> "
+<unique-N>.zones.$CATZ          0 PTR example.com.
+soa.boot.<unique-N>.zones.$CATZ 0 TXT ( "mname=<mname> "
       "rname=<rname> refresh=<refresh> retry=<retry> "
       "expire=<expire> minimum=<minimum>" )
-ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "name=some.name.server. "
+ns.boot.<unique-N>.zones.$CATZ  0 TXT ( "name=some.name.server. "
       "ipv4=192.0.2.1 ipv6=2001:db8::1" )
 ~~~~
 
@@ -229,7 +229,9 @@ Field meanings are unchanged from {{RFC9432}}.
 
 --- back
 
-# Catalog Zone Example
+# Examples
+
+## Catalog Zone Example
 
 The following is an example catalog zone showing the additional properties and parameters as outlined in this document.
 
@@ -240,20 +242,45 @@ The example.net. zone would utilise the default SOA record, but would utilise th
 The default nameservers are in-bailiwick of example.com, which is in the catalog, and so the address record details are supplied in order to facilitate the addition of the address records.
 
 ~~~~
-catz.invalid. 0 SOA invalid. invalid. 1 3600 600 2419200 3600
-catz.invalid. 0 NS invalid.
-soa.boot.catz.invalid. 0 TXT ( "mname=ns.example.com. "
+catz.invalid.                   0 SOA invalid. invalid. (
+      1 3600 600 2419200 3600 )
+catz.invalid.                   0 NS invalid.
+soa.boot.catz.invalid.          0 TXT ( "mname=ns1.example.com. "
       "rname=hostmaster.example.com. refresh=14400 "
       "retry=900 expire=2419200 minimum=3600" )
-ns.boot.catz.invalid. 0 TXT ( "name=ns1.example.com. ipv4=192.0.2.1 "
-      "ipv6=2001:db8::1" )
-ns.boot.catz.invalid. 0 TXT ( "name=ns2.example.com. ipv4=192.0.2.2 "
-      "ipv6=2001:db8::2" )
-kahdkh6f.zones.catz.invalid. 0 PTR example.com.
-hajhsjha.zones.catz.invalid. 0 PTR example.net.
-ns.hajhsjha.zones.catz.invalid. 0 TXT "name=ns.example.org"
-ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
+ns.boot.catz.invalid.           0 TXT ( "name=ns1.example.com. "
+      "ipv4=192.0.2.1 ipv6=2001:db8::1" )
+ns.boot.catz.invalid.           0 TXT ( "name=ns2.example.com. "
+      "ipv4=192.0.2.2 ipv6=2001:db8::2" )
+kahdkh6f.zones.catz.invalid.    0 PTR example.com.
+hajhsjha.zones.catz.invalid.    0 PTR example.net.
+ns.hajhsjha.zones.catz.invalid. 0 TXT "name=ns1.example.com"
+ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns1.example.net "
       "ipv4=192.0.2.250 ipv6=2001:db8:ff::149" )
+~~~~
+
+## example.com Master File Example
+
+~~~~
+example.com. 3600 SOA ns1.example.com. hostmaster.example.com. (
+                      1 14400 900 2419200 3600 )
+example.com.     3600 NS   ns1.example.com.
+example.com.     3600 NS   ns2.example.com.
+ns1.example.com. 3600 A    192.0.2.1
+ns1.example.com. 3600 AAAA 2001:db8::1
+ns2.example.com. 3600 A    192.0.2.2
+ns2.example.com. 3600 AAAA 2001:db8::2
+~~~~
+
+## example.net Master File Example
+
+~~~~
+example.net. 3600 SOA ns1.example.com. hostmaster.example.com. (
+                      1 14400 900 2419200 3600 )
+example.net.     3600 NS   ns1.example.com.
+example.net.     3600 NS   ns1.example.net.
+ns1.example.net. 3600 A    192.0.2.250
+ns1.example.net. 3600 AAAA 2001:db8:ff::149
 ~~~~
 
 # Author Notes/Thoughts
@@ -285,6 +312,8 @@ It seems that it'd be useful to signal initial policy/settings for DNSSEC in a s
 ### General
 
 Should the properties be listed in the registry as "soa.boot" and "ns.boot", given "boot" itself is a placeholder label, and doesn't (currently?) take any parameters or records of its own?
+
+TODO: Do we need to signal the initial TTL of the records being added (SOA, NS, A, AAAA)... I think so...
 
 ### coo Property
 
