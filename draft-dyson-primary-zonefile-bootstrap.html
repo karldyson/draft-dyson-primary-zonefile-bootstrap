@@ -1083,7 +1083,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Dyson</td>
-<td class="center">Expires 18 May 2025</td>
+<td class="center">Expires 19 May 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1099,12 +1099,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc9432" class="eref">9432</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-11-14" class="published">14 November 2024</time>
+<time datetime="2024-11-15" class="published">15 November 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-05-18">18 May 2025</time></dd>
+<dd class="expires"><time datetime="2025-05-19">19 May 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1146,7 +1146,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 18 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 19 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1219,6 +1219,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-member-zone-properties" class="internal xref">Member Zone Properties</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-change-of-ownership-coo-pro" class="internal xref">Change Of Ownership (coo Property)</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-name-server-behaviour" class="internal xref">Name Server Behaviour</a></p>
@@ -1362,7 +1367,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-parameters" class="section-name selfRef">Parameters</a>
           </h4>
 <p id="section-3.2.1-1">With the exception of the serial number, the SOA record parameters are supplied as key=value pairs in the RDATA of a TXT resource record, with the pairs separated by whitespace.<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.2.1-2">The keys are as per the field names expected in a SOA record as defined in Section 3.3.13 of <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>.<a href="#section-3.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-2">The keys are as per the field names expected in a SOA record as defined in Section 3.3.13 of <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>. The values supplied <span class="bcp14">MUST</span> be compliant with the definitions in that section also.<a href="#section-3.2.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="example">
@@ -1458,6 +1463,15 @@ soa.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "mname=&lt;mname&gt; "
 ns.boot.&lt;unique-N&gt;.zones.$CATZ 0 IN TXT ( "name=some.name.server. "
       "ipv4=192.0.2.1 ipv6=2001:db8::1" )
 </pre><a href="#section-4-3" class="pilcrow">¶</a>
+</div>
+<div id="change-of-ownership-coo-property">
+<section id="section-4.1">
+        <h3 id="name-change-of-ownership-coo-pro">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-change-of-ownership-coo-pro" class="section-name selfRef">Change Of Ownership (coo Property)</a>
+        </h3>
+<p id="section-4.1-1">There is no change to the coo property; if the member zone changes ownership to another catalog, fundamentally, the zone already exists.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">The scope of this document is solely concerned with the initial bootstrapping of the zone's file, and so in the case of the zone changing ownership, the bootstrap parameters <span class="bcp14">MUST NOT</span> be processed.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+</section>
 </div>
 </section>
 </div>
@@ -1602,7 +1616,7 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
       <h2 id="name-author-notes-thoughts">
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-author-notes-thoughts" class="section-name selfRef">Author Notes/Thoughts</a>
       </h2>
-<p id="appendix-B-1">NB: To be removed by the RFC Editor prior to publication.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-1"><em>NB: To be removed by the RFC Editor prior to publication.</em><a href="#appendix-B-1" class="pilcrow">¶</a></p>
 <div id="is-catalog-zones-the-right-place-for-this">
 <section id="appendix-B.1">
         <h3 id="name-is-catalog-zones-the-right-">
@@ -1615,7 +1629,7 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
             <p id="appendix-B.1-3.1.1">In a catalog zone scenario, the catalog equally feels like the place for zone related parameters<a href="#appendix-B.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-B.1-3.2">
-            <p id="appendix-B.1-3.2.1">It feels less like Dynamic Updates would be the right place for it<a href="#appendix-B.1-3.2.1" class="pilcrow">¶</a></p>
+            <p id="appendix-B.1-3.2.1">It feels less like Dynamic Updates would be the right place for it, for example.<a href="#appendix-B.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-B.1-3.3">
             <p id="appendix-B.1-3.3.1">An API for <em>just</em> zone bootstrapping feels like a big thing that would likely not get implemented, and would likely be a part of a wider implementation's general nameserver configuration and operations API, which is waaaaay beyond the scope of this document/standardisation<a href="#appendix-B.1-3.3.1" class="pilcrow">¶</a></p>
@@ -1653,6 +1667,7 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
 <a href="#appendix-B.3.2" class="section-number selfRef">B.3.2. </a><a href="#name-coo-property" class="section-name selfRef">coo Property</a>
           </h4>
 <p id="appendix-B.3.2-1">Are there any considerations around change of ownership that need mentioning or documenting here...?<a href="#appendix-B.3.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.3.2-2">14/11 - section added to address this; is there anything else that needs clarifying or covering?<a href="#appendix-B.3.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="soa-property">
@@ -1662,7 +1677,7 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
           </h4>
 <p id="appendix-B.3.3-1">Consideration was given as to whether things like SOA parameters should be individual records, but it seemed unnecessary to break them out and create the additional records.<a href="#appendix-B.3.3-1" class="pilcrow">¶</a></p>
 <p id="appendix-B.3.3-2">Should we permit the property to be made up of multiple TXT records so long as a given parameter is not repeated?<a href="#appendix-B.3.3-2" class="pilcrow">¶</a></p>
-<p id="appendix-B.3.3-3">Should we specify an soa serial format? or an initial soa serial value...? If not, should we specify in the text, or leave it to the implemention, which may have a default, such as BIND's "serial-update-method"<a href="#appendix-B.3.3-3" class="pilcrow">¶</a></p>
+<p id="appendix-B.3.3-3">Should we specify a SOA serial format? or an initial soa serial value...? If not, should we specify in the text, or leave it to the implemention, which may have a default, such as BIND's "serial-update-method"<a href="#appendix-B.3.3-3" class="pilcrow">¶</a></p>
 <p id="appendix-B.3.3-4">Given that it's pretty much expected that the operator is going to start making changes to the zone via dynamic updates, it'd be reasonable to expect them to be able to set those parameters. Which does beg the question, do we need to specify soa and nameserver values at all, or just specify that the zone file is or is not to be created, and fill some template default values with the expectation that the operator would immediatly overwrite them with "correct" values...?<a href="#appendix-B.3.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1683,7 +1698,7 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
       <h2 id="name-change-log">
 <a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-change-log" class="section-name selfRef">Change Log</a>
       </h2>
-<p id="appendix-C-1">NB: To be removed by the RFC Editor prior to publication.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-C-1"><em>NB: To be removed by the RFC Editor prior to publication.</em><a href="#appendix-C-1" class="pilcrow">¶</a></p>
 <div id="initial-draft">
 <section id="appendix-C.1">
         <h3 id="name-00-initial-draft">
