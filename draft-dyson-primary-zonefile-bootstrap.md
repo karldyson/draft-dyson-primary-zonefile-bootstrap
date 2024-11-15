@@ -117,7 +117,7 @@ Absence of a soa property similarly constitues a broken catalog zone.
 
 With the exception of the serial number, the SOA record parameters are supplied as key=value pairs in the RDATA of a TXT resource record, with the pairs separated by whitespace.
 
-The keys are as per the field names expected in a SOA record as defined in Section 3.3.13 of {{RFC1035}}.
+The keys are as per the field names expected in a SOA record as defined in Section 3.3.13 of {{RFC1035}}. The values supplied MUST be compliant with the definitions in that section also.
 
 ### Example
 
@@ -191,6 +191,12 @@ ns.boot.<unique-N>.zones.$CATZ 0 IN TXT ( "name=some.name.server. "
       "ipv4=192.0.2.1 ipv6=2001:db8::1" )
 ~~~~
 
+## Change Of Ownership (coo Property)
+
+There is no change to the coo property; if the member zone changes ownership to another catalog, fundamentally, the zone already exists.
+
+The scope of this document is solely concerned with the initial bootstrapping of the zone's file, and so in the case of the zone changing ownership, the bootstrap parameters MUST NOT be processed. 
+
 # Name Server Behaviour
 
 ## General Behaviour
@@ -249,7 +255,7 @@ ns.hajhsjha.zones.catz.invalid. 0 TXT ( "name=ns.example.net "
 
 # Author Notes/Thoughts
 
-NB: To be removed by the RFC Editor prior to publication.
+*NB: To be removed by the RFC Editor prior to publication.*
 
 ## Is catalog zones the right place for this?
 
@@ -258,7 +264,7 @@ Much consideration has been given as to whether the primary server should be con
 It does feel a little bit like it muddies the waters between zone distribution and zone "provisioning" but:
 
 1. In a catalog zone scenario, the catalog equally feels like the place for zone related parameters
-1. It feels less like Dynamic Updates would be the right place for it
+1. It feels less like Dynamic Updates would be the right place for it, for example.
 1. An API for *just* zone bootstrapping feels like a big thing that would likely not get implemented, and would likely be a part of a wider implementation's general nameserver configuration and operations API, which is waaaaay beyond the scope of this document/standardisation
 
 It may be considered that this is "nameserver configuration", however, it has strong parallels in this regard to the "configuration" on secondary servers, including such considerations as to which entities are allowed to notify and/or transfer the zone, as are conveyed to those secondary servers in {{RFC9432}} DNS Catalog Zones. Indeed, much of the same configuration may be needed by or shared with the primary server for those same zones.
@@ -281,13 +287,15 @@ Should the properties be listed in the registry as "soa.boot" and "ns.boot", giv
 
 Are there any considerations around change of ownership that need mentioning or documenting here...?
 
+14/11 - section added to address this; is there anything else that needs clarifying or covering?
+
 ### soa Property
 
 Consideration was given as to whether things like SOA parameters should be individual records, but it seemed unnecessary to break them out and create the additional records.
 
 Should we permit the property to be made up of multiple TXT records so long as a given parameter is not repeated?
 
-Should we specify an soa serial format? or an initial soa serial value...? If not, should we specify in the text, or leave it to the implemention, which may have a default, such as BIND's "serial-update-method"
+Should we specify a SOA serial format? or an initial soa serial value...? If not, should we specify in the text, or leave it to the implemention, which may have a default, such as BIND's "serial-update-method"
 
 Given that it's pretty much expected that the operator is going to start making changes to the zone via dynamic updates, it'd be reasonable to expect them to be able to set those parameters. Which does beg the question, do we need to specify soa and nameserver values at all, or just specify that the zone file is or is not to be created, and fill some template default values with the expectation that the operator would immediatly overwrite them with "correct" values...?
 
@@ -297,7 +305,7 @@ Is there a circular dependency or race condition issue here...?
 
 # Change Log
 
-NB: To be removed by the RFC Editor prior to publication.
+*NB: To be removed by the RFC Editor prior to publication.*
 
 ## 00 - Initial draft
 

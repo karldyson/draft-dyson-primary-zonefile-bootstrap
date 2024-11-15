@@ -2,16 +2,16 @@
 
 This is the working area for the individual Internet-Draft, "Zonefile Bootstrap on DNS Primary Server".
 
-* [Editor's Copy](https://karldyson.github.io/draft-dyson-zone-primary-bootstrap/#go.draft-dyson-primary-zonefile-bootstrap.html)
+* [Editor's Copy](https://karldyson.github.io/draft-dyson-primary-zonefile-bootstrap/#go.draft-dyson-primary-zonefile-bootstrap.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-dyson-primary-zonefile-bootstrap)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-dyson-primary-zonefile-bootstrap)
-* [Compare Editor's Copy to Individual Draft](https://karldyson.github.io/draft-dyson-zone-primary-bootstrap/#go.draft-dyson-primary-zonefile-bootstrap.diff)
+* [Compare Editor's Copy to Individual Draft](https://karldyson.github.io/draft-dyson-primary-zonefile-bootstrap/#go.draft-dyson-primary-zonefile-bootstrap.diff)
 
 
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/karldyson/draft-dyson-zone-primary-bootstrap/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/karldyson/draft-dyson-primary-zonefile-bootstrap/blob/main/CONTRIBUTING.md).
 
 Contributions can be made by creating pull requests.
 The GitHub interface supports creating pull requests using the Edit (✏) button.
